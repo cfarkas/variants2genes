@@ -88,9 +88,9 @@ echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
 begin=`date +%s`
-#freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${1} > ${control_name}.vcf
+freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${1} > ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
-#freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${2} > ${case_name}.vcf
+freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${2} > ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
