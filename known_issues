@@ -1,5 +1,0 @@
-# The following issues can occur with the usage of freebayes-parallel:
-
-1) https://github.com/ekg/freebayes/issues/130
-solved with: 
-sudo sed -i 's/\.\.\/vcflib\/.*\///g' $(which freebayes-parallel)
