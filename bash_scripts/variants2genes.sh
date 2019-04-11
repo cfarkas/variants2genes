@@ -108,16 +108,23 @@ echo "done"
 echo "Selecting variants in case VCF not present in control VCF:"
 vcfintersect -i Control_initial_filter.vcf ${case_name}.vcf -r ${ref} --invert > case_variants.vcf
 echo "done"
-echo "Filtering with QUAL > 30 case_variants.vcf:"
-vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL.vcf
-echo "done"
-echo "Filtering with DP > 5:"
-vcffilter -f "DP > 5"  case_variants.QUAL.vcf > case_variants.QUAL.DP.vcf
-echo "done"
+echo "Filtering with vcflib: QUAL > 30"
+vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
+echo "Filtering with vcflib: QUAL / AO > 10"
+vcffilter -f "QUAL / AO > 10" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
+echo "Filtering with vcflib: SAF > 0"
+vcffilter -f "SAF > 0" case_variants.QUAL2.filter.vcf > case_variants.QUAL3.filter.vcf
+echo "Filtering with vcflib: SAR > 0"
+vcffilter -f "SAR > 0" case_variants.QUAL3.filter.vcf > case_variants.QUAL4.filter.vcf
+echo "Filtering with vcflib: RPR > 3"
+vcffilter -f "RPR > 3" case_variants.QUAL4.filter.vcf > case_variants.QUAL5.filter.vcf
+echo "Filtering with vcflib: RPL > 3"
+vcffilter -f "RPL > 3" case_variants.QUAL5.filter.vcf > case_variants.QUAL6.filter.vcf
+echo "Filtering done"
 echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > merged.bed
-vcfintersect -b merged.bed case_variants.QUAL.DP.vcf > Case.filter.vcf
+vcfintersect -b merged.bed case_variants.QUAL6.filter.vcf > Case.filter.vcf
 echo "done"
 echo "Decomposing complex variants:"
 vcfallelicprimitives -g Case.filter.vcf > Case.filtered.vcf
@@ -137,8 +144,9 @@ bedtools intersect -a ${genome_name}.gtf -b Case.filtered.vcf > ${case_name}_ann
 cat ${case_name}_annot_variants.gtf | awk '{print $10}' > genes1.tabular
 sed 's/"//' genes1.tabular > genes2.tabular
 sed 's/";//' genes2.tabular > genes3.tabular
-sort genes3.tabular | uniq -u > genes_with_variants.tabular
-rm genes1.tabular genes2.tabular genes3.tabular
+sort genes3.tabular > genes4.tabular
+awk '!a[$0]++' genes4.tabular > genes_with_variants.tabular
+rm genes1.tabular genes2.tabular genes3.tabular genes4.tabular
 echo ""
 echo "Done. ${case_name}_annot_variants.gtf contains the intersected variants with the reference genome"
 echo "genes_with_variants.tabular is the list of genes with variants"
@@ -177,9 +185,4 @@ echo "(4): Raw Case VCF file"
 echo "(5): Case-associated variants in VCF format"
 echo "(6): Count table (gene_id) of Control and Case bam files"
 echo "(7): List of genes with variants plus gene quantification in Control and Case bam files, respectively"
-echo "....................................................................................................."  
-
-
-
-
-
+echo "....................................................................................................."
