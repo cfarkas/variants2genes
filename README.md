@@ -80,6 +80,8 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 >sudo apt-get install subread
 
 # Quick start:
->git clone https://github.com/cfarkas/variants2genes<br/>
->cd variants2genes/bash_scripts/<br/>
->bash genome_download.sh hg38    # for human genome hg38 build 
+```
+git clone https://github.com/cfarkas/variants2genes<br/>
+cd variants2genes/bash_scripts/<br/>
+bash genome_download.sh hg38    # for human genome hg38 build
+```
