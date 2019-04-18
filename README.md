@@ -82,4 +82,4 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 # Quick start:
 >git clone https://github.com/cfarkas/variants2genes<br/>
 >cd variants2genes/bash_scripts/<br/>
->bash bash genome_download.sh hg38 # for human genome  
+>bash genome_download.sh hg38    # for human genome hg38 build 
