@@ -78,3 +78,8 @@ Complete instructions can be found in https://samtools.github.io/bcftools/. User
 Complete instructions can be found in http://subread.sourceforge.net/. Users with privileges can accomplish with sudo: 
 
 >sudo apt-get install subread
+
+# Quick start:
+>git clone https://github.com/cfarkas/variants2genes
+>cd variants2genes/bash_scripts/
+>bash bash genome_download.sh hg38 # for human genome  
