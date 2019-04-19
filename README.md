@@ -28,19 +28,6 @@ To check installation of these packages, open R and type:
 
 >library(dplyr)<br/>library(gridExtra)<br/>library(reshape2)<br/>library(ggplot2)<br/>
 
-### Obtaining and installing Freebayes:
-Clone Freebayes folder in current directory: 
->git clone --recursive git://github.com/ekg/freebayes.git
-
-Enter Freebayes directory and make:
->cd freebayes/<br/> sudo make install
-
-Copy scripts to /usr/local/bin:
->sudo cp ./scripts/* /usr/local/bin/
-
-To check installation, type in terminal:
->freebayes<br/>bamleftalign
-
 ### Obtaining and installing vcflib:
 Clone vcflib folder in current directory:
 >git clone --recursive git://github.com/vcflib/vcflib.git
