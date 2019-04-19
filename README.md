@@ -67,7 +67,14 @@ Complete instructions can be found in http://www.htslib.org/. Users with privile
 ### Obtaining and installing BamTools
 Complete instructions can be found in https://github.com/pezmaster31/bamtools/wiki/Building-and-installing. Users with privileges can accomplish with sudo: 
 
->sudo apt install bamtools  
+>sudo apt install bamtools
+
+### Obtaining and installing bcftools
+To install the latest distribution, please visit https://samtools.github.io/bcftools/bcftools.html. Users with privileges can accomplish with sudo: 
+
+>sudo apt-get install bcftools  
+
+This command will install the version 1.2-2 (april 2019) needed for this pipeline
 
 ### Obtaining and installing Subread
 Complete instructions can be found in http://subread.sourceforge.net/. Users with privileges can accomplish with sudo: 
