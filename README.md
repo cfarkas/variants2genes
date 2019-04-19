@@ -59,7 +59,7 @@ Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/
 
 >sudo apt-get install bedtools
 
-### Obtaining and installing SAMtools
+### Obtaining and installing SAMtools (>= v0.1.19)
 Complete instructions can be found in http://www.htslib.org/. Users with privileges can accomplish with sudo: 
 
 >sudo apt-get install samtools
