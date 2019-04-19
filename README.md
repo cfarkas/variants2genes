@@ -46,10 +46,12 @@ Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/
 
 >sudo apt-get install bedtools
 
-### Obtaining and installing SAMtools (>= v0.1.19)
-Complete instructions can be found in http://www.htslib.org/. Users with privileges can accomplish with sudo: 
+### Obtaining and installing SAMtools (>= v1.2)
+The version by deafult in Ubuntu LTS 16.04 will not work. Users needs to install version up to date. This can be accomplish like this:
+>wget  "https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2"  && tar xfj samtools-1.2.tar.bz2  && (cd samtools-1.2 && make)<br>
+>cd samtools-1.2<br>
+>sudo cp samtools /usr/local/bin
 
->sudo apt-get install samtools
 
 ### Obtaining and installing BamTools
 Complete instructions can be found in https://github.com/pezmaster31/bamtools/wiki/Building-and-installing. Users with privileges can accomplish with sudo: 
