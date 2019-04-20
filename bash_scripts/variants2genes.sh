@@ -83,14 +83,14 @@ case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 ### Variant Calling
 echo "................................................................................."
 echo ""
-echo "Performing Variant Calling with Freebayes (see: https://github.com/ekg/freebayes):"
+echo "Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
 echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
 begin=`date +%s`
-freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${1} > ${control_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
-freebayes-parallel <(fasta_generate_regions.py ${ref}.fai 100000) ${threads} -f ${ref} -b ${2} > ${case_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
@@ -102,29 +102,26 @@ echo "Filtering and intersecting VCF files..."
 echo ""
 
 ### Filtering and intersecting VCF files
-echo "Initial filtering for control VCF file (QUAL > 1):"
-vcffilter -f "QUAL > 1" ${control_name}.vcf > Control_initial_filter.vcf
-echo "done"
+echo "Initial filtering for control VCF file with vcffilter:"
+vcffilter -f "DP > 4" ${control_name}.vcf > ${control_name}.filter1.vcf
+echo "Done"
+echo "Filtering with bcftools control and case vcf files..."
+bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.5' ${control_name}.filter1.vcf > Control_initial_filter.vcf
+bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.8' ${case_name}.vcf > ${case_name}.bcftools.vcf
+echo "Done"
 echo "Selecting variants in case VCF not present in control VCF:"
-vcfintersect -i Control_initial_filter.vcf ${case_name}.vcf -r ${ref} --invert > case_variants.vcf
-echo "done"
-echo "Filtering with vcflib: QUAL > 30"
+vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${ref} --invert > case_variants.vcf
+echo "Done"
+echo "Case VCF file: Filtering with vcflib ---> QUAL > 30"
 vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
-echo "Filtering with vcflib: QUAL / AO > 10"
-vcffilter -f "QUAL / AO > 10" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
-echo "Filtering with vcflib: SAF > 0"
-vcffilter -f "SAF > 0" case_variants.QUAL2.filter.vcf > case_variants.QUAL3.filter.vcf
-echo "Filtering with vcflib: SAR > 0"
-vcffilter -f "SAR > 0" case_variants.QUAL3.filter.vcf > case_variants.QUAL4.filter.vcf
-echo "Filtering with vcflib: RPR > 3"
-vcffilter -f "RPR > 3" case_variants.QUAL4.filter.vcf > case_variants.QUAL5.filter.vcf
-echo "Filtering with vcflib: RPL > 3"
-vcffilter -f "RPL > 3" case_variants.QUAL5.filter.vcf > case_variants.QUAL6.filter.vcf
-echo "Filtering done"
+echo "First filter done"
+echo "Case VCF file: Filtering with vcflib ---> DP > 8"
+vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
+echo "Second filter done"
 echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > merged.bed
-vcfintersect -b merged.bed case_variants.QUAL6.filter.vcf > Case.filter.vcf
+vcfintersect -b merged.bed case_variants.QUAL2.filter.vcf > Case.filter.vcf
 echo "done"
 echo "Decomposing complex variants:"
 vcfallelicprimitives -g Case.filter.vcf > Case.filtered.vcf
@@ -134,6 +131,7 @@ rm merged.bed
 rm Control.bed
 rm case_variants*
 rm *.filter.vcf
+rm *.filter1.vcf
 rm Control_initial_filter.vcf
 
 ### Annotating variants and obtaining gene list
