@@ -74,8 +74,8 @@ case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 ### Sorting bam files
 echo ""
 echo "Sorting Bam files ..."
-samtools sort ${1} ${control_name}.sorted -@ ${threads}
-samtools sort ${2} ${case_name}.sorted -@ ${threads}
+samtools sort ${1} -@ ${threads} > ${control_name}.sorted.bam
+samtools sort ${2} -@ ${threads} > ${case_name}.sorted.bam
 
 echo "Done. Indexing bam files"
 samtools index ${control_name}.sorted.bam
