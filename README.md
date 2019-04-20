@@ -46,8 +46,8 @@ Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/
 
 >sudo apt-get install bedtools
 
-### Obtaining and installing SAMtools (>= v1.2)
-The version by deafult in Ubuntu LTS 16.04 will not work. Users needs to install version up to date. This can be accomplish like this:
+### Obtaining and installing SAMtools (> v1.2)
+Old samtools version will not work. Users needs to install version up to date (please see http://www.htslib.org/download/). This can be accomplish like this:
 ```
 wget  "https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2"  && tar xfj samtools-1.2.tar.bz2  && (cd samtools-1.2 && make)
 cd samtools-1.2<br>
