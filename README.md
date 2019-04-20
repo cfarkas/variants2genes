@@ -46,25 +46,23 @@ Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/
 
 >sudo apt-get install bedtools
 
-### Obtaining and installing SAMtools (> v1.2)
-Old samtools version will not work. Users needs to install version up to date (please see http://www.htslib.org/download/). This can be accomplish like this:
+### Obtaining and installing up-to-date SAMtools, bcftools and htslib (version 1.9 for every package)
+Old samtools version will not work. Users needs to install version up to date of these three packages (please see http://www.htslib.org/download/). This can be accomplish downloading every package, decompressing it and doing the following:
 ```
-wget  "https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2"  && tar xfj samtools-1.2.tar.bz2  && (cd samtools-1.2 && make)
-cd samtools-1.2<br>
-sudo cp samtools /usr/local/bin
+cd samtools-1.x    # and similarly for bcftools and htslib
+sudo ./configure --prefix=/usr/local/bin
+sudo make
+sudo make install
+sudo cp samtools /usr/local/bin/    # this step is only for samtools and bcftools. 
 ```
+Then in a terminal type
+>samtools<br>bcftools<br>
+to check 1.9 versions (using htslib v1.9)
 
 ### Obtaining and installing BamTools
 Complete instructions can be found in https://github.com/pezmaster31/bamtools/wiki/Building-and-installing. Users with privileges can accomplish with sudo: 
 
 >sudo apt install bamtools
-
-### Obtaining and installing bcftools
-To install the latest distribution, please visit https://samtools.github.io/bcftools/bcftools.html. Users with privileges can accomplish with sudo: 
-
->sudo apt-get install bcftools  
-
-This command will install the version 1.2-2 (april 2019) needed for this pipeline
 
 ### Obtaining and installing Subread
 Complete instructions can be found in http://subread.sourceforge.net/. Users with privileges can accomplish with sudo: 
