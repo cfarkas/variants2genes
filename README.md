@@ -56,7 +56,7 @@ sudo make install
 sudo cp samtools /usr/local/bin/    # this step is only for samtools and bcftools. 
 ```
 Then in a terminal type
->samtools<br>bcftools<br>
+>samtools<br>bcftools
 to check 1.9 versions (using htslib v1.9)
 
 ### Obtaining and installing BamTools
