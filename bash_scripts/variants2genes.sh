@@ -88,9 +88,9 @@ echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
 begin=`date +%s`
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
+#bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
+#bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
@@ -121,18 +121,15 @@ echo "Second filter done"
 echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > merged.bed
-vcfintersect -b merged.bed case_variants.QUAL2.filter.vcf > Case.filter.vcf
-echo "done"
-echo "Decomposing complex variants:"
-vcfallelicprimitives -g Case.filter.vcf > Case.filtered.vcf
+vcfintersect -b merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
 echo "done"
 echo "Filtered Case-associated variants are named Case.filtered.vcf"
 rm merged.bed
 rm Control.bed
 rm case_variants*
-rm *.filter.vcf
 rm *.filter1.vcf
 rm Control_initial_filter.vcf
+rm *bcftools.vcf
 
 ### Annotating variants and obtaining gene list
 echo ""
