@@ -88,9 +88,9 @@ echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
 begin=`date +%s`
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
+#bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
+#bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
@@ -102,12 +102,12 @@ echo "Filtering and intersecting VCF files..."
 echo ""
 
 ### Filtering and intersecting VCF files
-echo "Initial filtering for control VCF file with vcffilter:"
-vcffilter -f "DP > 4" ${control_name}.vcf > ${control_name}.filter1.vcf
+echo "Initial filtering for control VCF file with vcffilter: (DP > 1)"
+vcffilter -f "DP > 1" ${control_name}.vcf > ${control_name}.filter1.vcf
 echo "Done"
 echo "Filtering with bcftools control and case vcf files..."
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.5' ${control_name}.filter1.vcf > Control_initial_filter.vcf
-bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.8' ${case_name}.vcf > ${case_name}.bcftools.vcf
+bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > ${case_name}.bcftools.vcf
 echo "Done"
 echo "Selecting variants in case VCF not present in control VCF:"
 vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${ref} --invert > case_variants.vcf
@@ -115,8 +115,8 @@ echo "Done"
 echo "Case VCF file: Filtering with vcflib ---> QUAL > 30"
 vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
 echo "First filter done"
-echo "Case VCF file: Filtering with vcflib ---> DP > 8"
-vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
+echo "Case VCF file: Filtering with vcflib ---> DP > 6"
+vcffilter -f "DP > 6" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
 echo "Second filter done"
 echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
