@@ -9,7 +9,7 @@ The pipeline is implemented in the BASH/R enviroment and is available for severa
 
 ## Preeliminars:
 ### Obtaining and installing R
-See https://www.r-project.org/ for R installation. R comes by default in Ubuntu but could be outdated. Users can also accomplish via conda:
+See https://www.r-project.org/ for R installation. R comes by default in Ubuntu but could be outdated (for Ubuntu 14.04 as example). Users can also accomplish via conda:
 
 >conda install -c r r 
 
