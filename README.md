@@ -30,16 +30,24 @@ To check installation of these packages, open R and type:
 
 ### Obtaining and installing vcflib:
 Clone vcflib folder in current directory:
->git clone --recursive git://github.com/vcflib/vcflib.git
+```
+git clone --recursive git://github.com/vcflib/vcflib.git
 
-Enter vcflib directory and make
->cd vcflib/<br/>make   
+# If this line not work, try:
+git config --global url.https://github.com/.insteadOf git://github.com/
+git clone --recursive git://github.com/vcflib/vcflib.git
 
-After make, binaries and scripts can be copied in /usr/local/bin with sudo. In vcflib/ directory:
+#Enter vcflib directory and make
+cd vcflib
+make   
 
->sudo cp scripts/* /usr/local/bin/<br/>sudo cp bin/* /usr/local/bin/
+#After make, binaries and scripts can be copied in /usr/local/bin with sudo. In vcflib/ directory:
 
-To check vcflib scripts, type vcf in terminal followed by TAB and display all posibilities
+sudo cp scripts/* /usr/local/bin/
+sudo cp bin/* /usr/local/bin/
+
+#To check vcflib scripts, type vcf in terminal followed by TAB and display all posibilities
+```
 
 ### Obtaining and Installing BEDTools
 Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/content/installation.html. Users with privileges can accomplish with sudo: 
