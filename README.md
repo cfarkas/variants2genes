@@ -74,7 +74,7 @@ Complete instructions can be found in https://github.com/pezmaster31/bamtools/wi
 
 >sudo apt install bamtools
 
-### Obtaining and installing Subread
+### Obtaining and installing Subread (for using featurecounts)
 Complete instructions can be found in http://subread.sourceforge.net/. Users with privileges can accomplish with sudo: 
 
 >sudo apt-get install subread
