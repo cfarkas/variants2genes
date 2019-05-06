@@ -13,10 +13,12 @@ See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3
 ```
 # Removing R from system
 sudo apt-get remove r-base-core
+
 # Editing sources.list 
 sudo su
 echo "deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/" >> /etc/apt/sources.list
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+
 # Installing R (version 3.6.0)
 sudo apt update; sudo apt install r-base
 exit
