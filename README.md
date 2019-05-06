@@ -94,7 +94,26 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 # Quick start:
 ```
 git clone https://github.com/cfarkas/variants2genes
-cd variants2genes/bash_scripts/
+cd variants2genes
+
+#Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install)
+wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
+gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
+tar -xvf sratoolkit.2.9.6-ubuntu64.tar
+sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
+
+# Obtaining HISAT2 aligner (If it is already installed in /usr/local/bin/ please continue downloading test reads)
+wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
+unzip hisat2-2.0.4-Linux_x86_64.zip
+sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
+
+# Downloading test fastq files in test folder
+mkdir test
+cd test/
+fastq-dump -Z SRR8267474 > WT.fastq
+fastq-dump -Z SRR8267458 > KO1.fastq
+
+
 bash genome_download.sh hg38    # for human genome hg38 build
 cd ..
 
