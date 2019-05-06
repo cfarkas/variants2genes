@@ -25,7 +25,7 @@ exit
 R
 ```
 
-The following R packages are required for the script usages (see https://www.r-project.org/ for R installation)
+The following R packages are required for the script usages:
 
 dplyr >=0.7.4       
 gridExtra >=2.3     
