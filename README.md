@@ -9,7 +9,7 @@ The pipeline is implemented in the BASH/R enviroment and is available for severa
 
 ## Preeliminars:
 ### Obtaining and installing R (>=3.2.0)
-See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be as follows:
+See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
 ```
 # Removing R from system
 sudo apt-get remove r-base-core
