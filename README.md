@@ -8,10 +8,8 @@ between two matched samples from WES/WGS data (and in some cases, RNA-seq data).
 The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse and Rat.
 
 ## Preeliminars:
-### Obtaining and installing R
-See https://www.r-project.org/ for R installation. R comes by default in Ubuntu but could be outdated (for Ubuntu 14.04 as example). Users can also accomplish via conda:
-
->conda install -c r r 
+### Obtaining and installing R (>=3.2.0)
+See https://www.r-project.org/ for R installation. R v3.2 comes from default in Ubuntu 16.04 LTS and in other distributions. 
 
 The following R packages are required for the script usages (see https://www.r-project.org/ for R installation)
 
