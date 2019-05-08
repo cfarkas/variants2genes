@@ -1,5 +1,5 @@
 # variants2genes
-Obtaining case-associated variants and correspondent genes (from control/case experiments) in BASH/R enviroment
+Obtaining case-linked variants and correspondent genes (from control/case experiments) in BASH/R enviroment
 
 ## Pipeline Outline
 
