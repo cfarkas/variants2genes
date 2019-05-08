@@ -91,7 +91,7 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 
 >sudo apt-get install subread
 
-# Quick start:
+# Quick start (mouse RNA-seq):
 ```
 git clone https://github.com/cfarkas/variants2genes
 cd variants2genes
@@ -112,9 +112,12 @@ mkdir test
 cd test/
 fastq-dump -Z SRR8267474 > WT.fastq
 fastq-dump -Z SRR8267458 > KO1.fastq
-
-
-bash genome_download.sh hg38    # for human genome hg38 build
 cd ..
+
+# 1) Coping bash scripts to test folder and download mm10 genome (using genome_download.sh script)
+cp bash_scripts/* ./test/
+cd test/
+bash genome_download.sh mm10    # for human genome hg38 build
+
 
 ```
