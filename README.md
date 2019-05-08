@@ -147,5 +147,5 @@ bash plot-coverage.sh WT.sorted.bam KO1.sorted.bam bam_coverage_mouse.R
 ## STEP 3: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
 bash variants2genes.sh WT.sorted.bam KO1.sorted.bam mm10.fa 40
 
-# All done. Check KO1 folder with output files:
+# All done. Check KO1 sub-folder in ./test with output files.
 ```
