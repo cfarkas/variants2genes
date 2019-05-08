@@ -96,28 +96,56 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 git clone https://github.com/cfarkas/variants2genes
 cd variants2genes
 
-# Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install)
+####################
+### Preeliminars ###
+####################
+
+# Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install).
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
 tar -xvf sratoolkit.2.9.6-ubuntu64.tar
 sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
 
-# Obtaining HISAT2 aligner (If it is already installed in /usr/local/bin/ please continue downloading test reads)
+# Obtaining HISAT2 aligner (If it is already installed in /usr/local/bin/ please continue downloading test reads).
 wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 
-# Downloading test fastq files in test folder
+# Downloading test fastq files in test folder.
 mkdir test
 cd test/
 fastq-dump -Z SRR8267474 > WT.fastq
 fastq-dump -Z SRR8267458 > KO1.fastq
 cd ..
 
-# STEP1: Coping bash scripts to test folder and download mm10 genome (using genome_download.sh script)
+# Coping bash scripts and bam_coverage_mouse.R script to test folder. 
 cp bash_scripts/* ./test/
+cp ./R_scripts/bam_coverage_mouse.R ./test/
+
+# Download mm10 genome, index it and download mm10 GTF annotation file (using genome_download.sh script).
 cd test/
-bash genome_download.sh mm10    # for human genome hg38 build
+bash genome_download.sh mm10    # for mouse genome mm10 build.
+mkdir hisat2_index_mm10
 
+# Build genome index using 40 threads (-p parameter).
+hisat2-build mm10.fa -p 40 ./hisat2_index_mm10/mm10_index
 
+# Align reads to reference genome using 40 threads (-p parameter).
+hisat2 -x ./hisat2_index_mm10/mm10_index -p 40 -U WT.fastq | samtools view -bS - > WT.bam
+hisat2 -x ./hisat2_index_mm10/mm10_index -p 40 -U KO1.fastq | samtools view -bS - > KO1.bam
+
+#######################
+### Pipeline Starts ###
+#######################
+
+## STEP 1: Use sort_bam.sh script to sort bam samples using 40 threads
+bash sort_bam.sh WT.bam KO1.bam 40
+
+## STEP 2: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
+bash plot-coverage.sh WT.sorted.bam KO1.sorted.bam bam_coverage_mouse.R 
+
+## STEP 3: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
+bash variants2genes.sh WT.sorted.bam KO1.sorted.bam mm10.fa 40
+
+# All done. Check KO1 folder with output files:
 ```
