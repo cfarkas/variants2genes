@@ -96,7 +96,7 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 git clone https://github.com/cfarkas/variants2genes
 cd variants2genes
 
-#Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install)
+# Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install)
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
 tar -xvf sratoolkit.2.9.6-ubuntu64.tar
@@ -114,7 +114,7 @@ fastq-dump -Z SRR8267474 > WT.fastq
 fastq-dump -Z SRR8267458 > KO1.fastq
 cd ..
 
-# 1) Coping bash scripts to test folder and download mm10 genome (using genome_download.sh script)
+# STEP1: Coping bash scripts to test folder and download mm10 genome (using genome_download.sh script)
 cp bash_scripts/* ./test/
 cd test/
 bash genome_download.sh mm10    # for human genome hg38 build
