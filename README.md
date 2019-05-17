@@ -91,7 +91,7 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 
 >sudo apt-get install subread
 
-### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-Start).
+### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-start).
 ```
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
