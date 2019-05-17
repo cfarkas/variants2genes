@@ -91,7 +91,7 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 
 >sudo apt-get install subread
 
-### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-Start, installed in /usr/local/bin).
+### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-Start).
 ```
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
@@ -99,7 +99,7 @@ tar -xvf sratoolkit.2.9.6-ubuntu64.tar
 sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
 
 ```
-### Obtaining HISAT2 aligner (for aligning RNA-seq data, installed in /usr/local/bin).
+### Obtaining HISAT2 aligner (for aligning RNA-seq data).
 ```
 wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
 unzip hisat2-2.0.4-Linux_x86_64.zip
