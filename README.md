@@ -91,6 +91,17 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 
 >sudo apt-get install subread
 
+### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-Start, installed in /usr/local/bin).
+wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
+gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
+tar -xvf sratoolkit.2.9.6-ubuntu64.tar
+sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
+
+### Obtaining HISAT2 aligner (for aligning RNA-seq data, installed in /usr/local/bin).
+wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
+unzip hisat2-2.0.4-Linux_x86_64.zip
+sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
+
 # Quick start (mouse RNA-seq):
 ```
 git clone https://github.com/cfarkas/variants2genes
@@ -99,17 +110,6 @@ cd variants2genes
 ####################
 ### Preeliminars ###
 ####################
-
-# Obtaining SRA toolkit from ncbi. (If it is already installed in /usr/local/bin/ please continue with HISAT2 install).
-wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
-gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
-tar -xvf sratoolkit.2.9.6-ubuntu64.tar
-sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
-
-# Obtaining HISAT2 aligner (If it is already installed in /usr/local/bin/ please continue downloading test reads).
-wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
-unzip hisat2-2.0.4-Linux_x86_64.zip
-sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 
 # Downloading test fastq files in test folder.
 mkdir test
