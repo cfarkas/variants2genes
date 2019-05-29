@@ -143,7 +143,7 @@ sed 's/"//' genes1.tabular > genes2.tabular
 sed 's/";//' genes2.tabular > genes3.tabular
 sort genes3.tabular > genes4.tabular
 awk '!a[$0]++' genes4.tabular > genes_with_variants.tabular
-rm genes1.tabular genes2.tabular genes3.tabular genes4.tabular filter_merged.bed
+rm genes1.tabular genes2.tabular genes3.tabular genes4.tabular filter_merged.bed control_case_counts
 echo ""
 echo "Done. ${case_name}_annot_variants.gtf contains the intersected variants with the reference genome"
 echo "genes_with_variants.tabular is the list of genes with variants"
