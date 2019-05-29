@@ -120,14 +120,12 @@ vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filte
 echo "Second filter done"
 echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
-mergeBed -i Control.bed > merged.bed
-multiBamCov -bams WT.sorted.bam KO1.sorted.bam -bed merged.bed > control_case_counts
-awk '{ if ($4 > 4) { print } }' control_case_counts > filter_merged.bed
+multiBamCov -bams ${1} -bed Control.bed > control_counts
+awk '{ if ($7 > 4) { print } }' control_counts > filter_merged.bed
 vcfintersect -b filter_merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
 echo "done"
 echo "Filtered Case-associated variants are named Case.filtered.vcf"
-rm merged.bed
-rm Control.bed
+rm Control.bed filter_merged.bed control_counts
 rm case_variants*
 rm *.filter1.vcf
 rm Control_initial_filter.vcf
@@ -143,7 +141,7 @@ sed 's/"//' genes1.tabular > genes2.tabular
 sed 's/";//' genes2.tabular > genes3.tabular
 sort genes3.tabular > genes4.tabular
 awk '!a[$0]++' genes4.tabular > genes_with_variants.tabular
-rm genes1.tabular genes2.tabular genes3.tabular genes4.tabular filter_merged.bed control_case_counts
+rm genes1.tabular genes2.tabular genes3.tabular genes4.tabular
 echo ""
 echo "Done. ${case_name}_annot_variants.gtf contains the intersected variants with the reference genome"
 echo "genes_with_variants.tabular is the list of genes with variants"
