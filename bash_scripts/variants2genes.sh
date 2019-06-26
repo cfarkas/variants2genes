@@ -122,7 +122,7 @@ echo "Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > Control.merged.bed
 multiBamCov -bams ${1} -bed Control.merged.bed > control_counts
-awk '{ if ($7 > 7) { print } }' control_counts > filter_merged.bed
+awk '{ if ($4 > 7) { print } }' control_counts > filter_merged.bed
 vcfintersect -b filter_merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
 echo "done"
 echo "Filtered Case-associated variants are named Case.filtered.vcf"
