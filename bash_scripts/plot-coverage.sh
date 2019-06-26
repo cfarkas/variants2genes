@@ -60,7 +60,6 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
-
 [ $# -eq 0 ] && { echo "Usage: bash ./`basename $0` {control_bam_file} {case_bam_file} {path/to/bam_coverage.R}"; exit 1; }
 
 if [ $# -ne 3 ]; then
@@ -73,12 +72,10 @@ echo "Outputting graph in: ${dir1}"
 echo ""
 echo "Calculating coverage for Control and Case bam files"
 bamToBed -i ${1} > ${1}.bed
-mergeBed -i ${1}.bed > ${1}.merged.bed
 echo "Control file done. Continue with Case file..."
 bamToBed -i ${2} > ${2}.bed
-mergeBed -i ${2}.bed > ${2}.merged.bed
-mv ${1}.merged.bed Control_bed
-mv ${2}.merged.bed Case_bed
+mv ${1}.bed Control_bed
+mv ${2}.bed Case_bed
 echo "Case file done."
 echo "done"
 echo "Generating plots..."
