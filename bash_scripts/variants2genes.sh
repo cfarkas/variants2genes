@@ -103,7 +103,7 @@ echo ""
 
 ### Filtering and intersecting VCF files
 echo "Initial filtering for control VCF file with vcffilter: (DP > 1)"
-vcffilter -f "DP > 1" ${control_name}.vcf > ${control_name}.filter1.vcf
+vcffilter -f "QUAL > 8" ${control_name}.vcf > ${control_name}.filter1.vcf
 echo "Done"
 echo "Filtering with bcftools control and case vcf files..."
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_name}.filter1.vcf > Control_initial_filter.vcf
