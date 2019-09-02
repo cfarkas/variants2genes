@@ -115,11 +115,25 @@ cd variants2genes
 ### Preeliminars ###
 ####################
 
-# Downloading test fastq files in test folder.
+# Downloading test fastq files (two RNA-seq samples sequenced with illumina NextSeq 500 machine) in test folder.
 mkdir test
 cd test/
-fastq-dump -Z SRR8267474 > WT.fastq
-fastq-dump -Z SRR8267458 > KO1.fastq
+fastq-dump -Z SRR8267474 > WT.1.fastq
+fastq-dump -Z SRR8267475 > WT.2.fastq
+fastq-dump -Z SRR8267476 > WT.3.fastq
+fastq-dump -Z SRR8267477 > WT.4.fastq
+
+cat WT.*.fastq > WT1.fastq
+rm WT.*.fastq
+
+fastq-dump -Z SRR8267458 > KO1.1.fastq
+fastq-dump -Z SRR8267459 > KO1.2.fastq
+fastq-dump -Z SRR8267460 > KO1.3.fastq
+fastq-dump -Z SRR8267461 > KO1.4.fastq
+
+cat KO.*.fastq > KO1.fastq
+rm KO.*.fastq
+
 cd ..
 
 # Coping bash scripts and bam_coverage_mouse.R script to test folder. 
