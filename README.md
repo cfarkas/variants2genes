@@ -123,7 +123,7 @@ fastq-dump -Z SRR8267475 > WT.2.fastq
 fastq-dump -Z SRR8267476 > WT.3.fastq
 fastq-dump -Z SRR8267477 > WT.4.fastq
 
-cat WT.*.fastq > WT1.fastq
+cat WT.*.fastq > WT.fastq
 rm WT.*.fastq
 
 fastq-dump -Z SRR8267458 > KO1.1.fastq
