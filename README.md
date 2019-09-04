@@ -131,8 +131,8 @@ fastq-dump -Z SRR8267459 > KO1.2.fastq
 fastq-dump -Z SRR8267460 > KO1.3.fastq
 fastq-dump -Z SRR8267461 > KO1.4.fastq
 
-cat KO.*.fastq > KO1.fastq
-rm KO.*.fastq
+cat KO1.*.fastq > KO1.fastq
+rm KO1.*.fastq
 
 cd ..
 
