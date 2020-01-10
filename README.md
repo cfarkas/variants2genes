@@ -4,7 +4,7 @@ Obtaining case-linked variants and correspondent genes (from control/case experi
 ## Pipeline Outline
 
 variants2genes are a set of bash scripts that address (based on several well-known genomic tools) case associated variants (with correspondent genes) 
-between two matched samples from WES/WGS data (and in some cases, RNA-seq data). The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes. This resource could be useful in the Normal/Tumor comparison analysis, among other scenarios.
+between two matched samples from WES/WGS data (RNA-seq data can be also used). The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
 The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse and Rat.
 
 ## Preeliminars:
@@ -106,64 +106,40 @@ unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 
-# Quick start (mouse RNA-seq):
+# Quickstart:
+## Collect haplotypes from RNA-seq data:
+- In this example, we will analyze haplotypes from an RNA-seq data, aligned againts galGal6 genome (gallus gallus version 6). This RNA sequencing comes from an unespecified gallus gallus substrain (named in this example as aligned.sorted.bam), without reference genome. To call haplotypes in this sample, we will employ as reference a WGS illumina bam used in the assembly of galGal6 genome (sra accession SRR3954707) . The whole pipeline can be runned as follows:
 ```
 git clone https://github.com/cfarkas/variants2genes
 cd variants2genes
+mkdir galGal6_analysis
 
-####################
-### Preeliminars ###
-####################
+# Copying all bash scripts to galGal6_analysis
+cp bash_scripts/* ./galGal6_analysis/
 
-# Downloading test fastq files (two RNA-seq samples sequenced with illumina NextSeq 500 machine) in test folder.
-mkdir test
-cd test/
-fastq-dump -Z SRR8267474 > WT.1.fastq
-fastq-dump -Z SRR8267475 > WT.2.fastq
-fastq-dump -Z SRR8267476 > WT.3.fastq
-fastq-dump -Z SRR8267477 > WT.4.fastq
+# Copying relevant R script to galGal6_analysis
+cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
 
-cat WT.*.fastq > WT.fastq
-rm WT.*.fastq
+# Place reference (illumina WGS bam file) and target RNA-seq bam file into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name reference WGS sequencing as "reference.bam" and target RNA-seq sequencing as "target.bam" 
 
-fastq-dump -Z SRR8267458 > KO1.1.fastq
-fastq-dump -Z SRR8267459 > KO1.2.fastq
-fastq-dump -Z SRR8267460 > KO1.3.fastq
-fastq-dump -Z SRR8267461 > KO1.4.fastq
+cp /some_directory/reference.bam ./galGal6_analysis/
+cp /some_directory/target.bam ./galGal6_analysis/
 
-cat KO1.*.fastq > KO1.fastq
-rm KO1.*.fastq
-
-cd ..
-
-# Coping bash scripts and bam_coverage_mouse.R script to test folder. 
-cp bash_scripts/* ./test/
-cp ./R_scripts/bam_coverage_mouse.R ./test/
-
-# Download mm10 genome, index it and download mm10 GTF annotation file (using genome_download.sh script).
-cd test/
-bash genome_download.sh mm10    # for mouse genome mm10 build.
-mkdir hisat2_index_mm10
-
-# Build genome index using 40 threads (-p parameter).
-hisat2-build mm10.fa -p 40 ./hisat2_index_mm10/mm10_index
-
-# Align reads to reference genome using 40 threads (-p parameter).
-hisat2 -x ./hisat2_index_mm10/mm10_index -p 40 -U WT.fastq | samtools view -bS - > WT.bam
-hisat2 -x ./hisat2_index_mm10/mm10_index -p 40 -U KO1.fastq | samtools view -bS - > KO1.bam
+# Download Reference genome from UCSC into galGal6_analysis folder
+bash genome_download.sh galGal6
 
 #######################
 ### Pipeline Starts ###
 #######################
 
 ## STEP 1: Use sort_bam.sh script to sort bam samples using 40 threads
-bash sort_bam.sh WT.bam KO1.bam 40
+bash sort_bam.sh reference.bam target.bam 40
 
 ## STEP 2: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
-bash plot-coverage.sh WT.sorted.bam KO1.sorted.bam bam_coverage_mouse.R 
+bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R 
 
 ## STEP 3: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh WT.sorted.bam KO1.sorted.bam mm10.fa 40
+bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
 
-# All done. Check KO1 sub-folder in ./test with output files.
+# All done. Check target sub-folder in ./galGal6_analysis with output files.
 ```
