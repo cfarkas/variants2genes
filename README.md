@@ -165,6 +165,8 @@ bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
 # All done. Check target sub-folder in ./galGal6_analysis with output files.
 ```
 
+## Employing user-provided GTF files:
+
 Important: If users have their own annotation file, their can use it in the pipeline, if desired. Their must replace {genome}.gtf file, automatically obtained in STEP 1 for their own GTF file, with the same name. As example, using user-provided "final_annotated.gtf" instead galGal6.gtf obtained in STEP 1:
 
 ```
