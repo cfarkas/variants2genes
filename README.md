@@ -144,20 +144,22 @@ cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
 cp /some_directory/reference.bam ./galGal6_analysis/
 cp /some_directory/target.bam ./galGal6_analysis/
 
-# Download Reference genome from UCSC into galGal6_analysis folder
-bash genome_download.sh galGal6
 
 #######################
 ### Pipeline Starts ###
 #######################
 
-## STEP 1: Use sort_bam.sh script to sort bam samples using 40 threads
+## STEP 1: Inside galGal6_analysis folder, download reference genome from UCSC
+cd galGal6_analysis/
+bash genome_download.sh galGal6
+
+## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
 bash sort_bam.sh reference.bam target.bam 40
 
-## STEP 2: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
+## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
 bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R 
 
-## STEP 3: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
+## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
 bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
 
 # All done. Check target sub-folder in ./galGal6_analysis with output files.
