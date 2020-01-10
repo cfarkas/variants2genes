@@ -91,7 +91,7 @@ Complete instructions can be found in http://subread.sourceforge.net/. Users wit
 
 >sudo apt-get install subread
 
-### Obtaining SRA toolkit from ncbi (for downloading reads for Quick-start).
+### Obtaining SRA toolkit from ncbi (for downloading reads from GEO datasets).
 ```
 wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.tar.gz
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
@@ -104,6 +104,15 @@ sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
 wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
+```
+
+### Obtaining and installing bowtie2 aligner (for aligning WES/WGS data)
+```
+# Users with privileges can execute in a terminal: 
+sudo apt-get install bowtie2
+
+# Via Conda
+conda install bowtie2
 ```
 
 # Usage:
