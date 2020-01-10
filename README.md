@@ -7,7 +7,7 @@ variants2genes are a set of bash scripts that address (based on several well-kno
 between two matched samples from WES/WGS data (RNA-seq data can be also used). The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
 The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse and Rat.
 
-## Preeliminars:
+## Installation requirements:
 ### Obtaining and installing R (>=3.2.0)
 See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
 ```
@@ -114,10 +114,21 @@ sudo apt-get install bowtie2
 # Via Conda
 conda install bowtie2
 ```
+## Preeliminars:
+As example, we will obtain illumina shotgun sequencing data used to assemble ther recent gallus gallus 6 genome (galGal6, sra accession SRR3954707). We will align those reads to the fasta reference galGal6.fa in order to obtain a bam file, suitable for the pipeline (using 40 threads):
+
+```
+fastq-dump -Z SRR3954707 > illumina_1.fastq
+bowtie2-build galGal6.fa galGal6 --threads 40
+bowtie2 -p 40 -x /home/lrt/brain_chicken/PacBio/haplotypes/bowtie2_index/galGal6 illumina_1.fastq > reference.sam
+samtools sort reference.sam > reference.sorted.bam -@ 40
+```
+Now reference.sorted.bam file can be used to compare any sequencing (RNA-seq/WES/WGS) aligned to galGal6 genome, as specified in the next section. 
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- In this example, we will analyze haplotypes from an RNA-seq data, aligned againts galGal6 genome (gallus gallus version 6). This RNA sequencing comes from an unespecified gallus gallus substrain without reference genome (named in this example as aligned.sorted.bam). To call haplotypes in this sample, we will employ as reference a WGS illumina bam used in the assembly of galGal6 genome (sra accession SRR3954707) . The whole pipeline can be runned as follows:
+- Here, we will analyze haplotypes from an example RNA-seq data, aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain without reference genome (named in this example as aligned.sorted.bam) and we need to dissect haplotypes. To call variants in this sample, we will employ the reference.sorted.bam file described previously. With the reference.sorted.bam, as reference and the target bam file to analyze, the whole pipeline can be runned as follows:
+
 ```
 git clone https://github.com/cfarkas/variants2genes
 cd variants2genes
