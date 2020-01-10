@@ -127,7 +127,7 @@ Now reference.sorted.bam file can be used to compare any sequencing (RNA-seq/WES
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- Here, we will analyze haplotypes from an example RNA-seq data, aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain without reference genome (named in this example as aligned.sorted.bam) and we need to dissect haplotypes. To call variants in this sample, we will employ the reference.sorted.bam file described previously. With the reference.sorted.bam, as reference and the target bam file to analyze, the whole pipeline can be runned as follows:
+- Here, we will analyze haplotypes from an RNA-seq data (named aligned.sorted.bam as example) aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain without reference genome, and we need to dissect haplotypes. To call variants in this sample, we will employ the reference.sorted.bam file described previously. With the reference.sorted.bam, as reference and the aligned.sorted.bam file as target, the whole pipeline can be runned as follows:
 
 ```
 git clone https://github.com/cfarkas/variants2genes
