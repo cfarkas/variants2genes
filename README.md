@@ -106,7 +106,7 @@ unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 
-# Quickstart:
+# Usage:
 ## Collect haplotypes from RNA-seq data:
 - In this example, we will analyze haplotypes from an RNA-seq data, aligned againts galGal6 genome (gallus gallus version 6). This RNA sequencing comes from an unespecified gallus gallus substrain (named in this example as aligned.sorted.bam), without reference genome. To call haplotypes in this sample, we will employ as reference a WGS illumina bam used in the assembly of galGal6 genome (sra accession SRR3954707) . The whole pipeline can be runned as follows:
 ```
