@@ -149,7 +149,7 @@ cp /some_directory/target.bam ./galGal6_analysis/
 ### Pipeline Starts ###
 #######################
 
-## STEP 1: Inside galGal6_analysis folder, download reference genome from UCSC
+## STEP 1: Inside galGal6_analysis folder, download reference genome from UCSC and correspondent GTF file.
 cd galGal6_analysis/
 bash genome_download.sh galGal6
 
@@ -163,4 +163,16 @@ bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicke
 bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
 
 # All done. Check target sub-folder in ./galGal6_analysis with output files.
+```
+
+Important: If users have their own annotation file, their can use it in the pipeline, if desired. Their must replace {genome}.gtf file, automatically obtained in STEP 1 for their own GTF file, with the same name. As example, using user-provided "final_annotated.gtf" instead galGal6.gtf obtained in STEP 1:
+
+```
+## STEP 1
+cd galGal6_analysis/
+bash genome_download.sh galGal6
+rm galGal6.gtf
+cp /some_directory/final_annotated.gtf ./galGal6.gtf
+
+## STEP 2,3 and 4 continue as previously specified
 ```
