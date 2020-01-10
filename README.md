@@ -120,7 +120,7 @@ As example, we will obtain illumina shotgun sequencing data used to assemble the
 ```
 fastq-dump -Z SRR3954707 > illumina_1.fastq
 bowtie2-build galGal6.fa galGal6 --threads 40
-bowtie2 -p 40 -x /home/lrt/brain_chicken/PacBio/haplotypes/bowtie2_index/galGal6 illumina_1.fastq > reference.sam
+bowtie2 -p 40 -x galGal6 illumina_1.fastq > reference.sam
 samtools sort reference.sam > reference.sorted.bam -@ 40
 ```
 Now reference.sorted.bam file can be used to compare any sequencing (RNA-seq/WES/WGS) aligned to galGal6 genome, as specified in the next section. 
