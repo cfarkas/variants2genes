@@ -1,4 +1,4 @@
-﻿library(ggplot2)
+library(ggplot2)
 library(reshape2)
 library(gridExtra)
 library(grid)
