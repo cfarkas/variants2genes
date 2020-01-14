@@ -72,10 +72,10 @@ echo "Outputting graph in: ${dir1}"
 echo ""
 echo "Calculating coverage for Control and Case bam files"
 bamToBed -i ${1} > ${1}.bed
+bedtools merge -i ${1}.bed > Control_bed
 echo "Control file done. Continue with Case file..."
 bamToBed -i ${2} > ${2}.bed
-mv ${1}.bed Control_bed
-mv ${2}.bed Case_bed
+bedtools merge -i ${2}.bed > Case_bed
 echo "Case file done."
 echo "done"
 echo "Generating plots..."
