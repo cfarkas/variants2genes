@@ -106,24 +106,19 @@ unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 
-### Obtaining and installing bowtie2 aligner (for aligning WES/WGS data)
-```
-# Users with privileges can execute in a terminal: 
-sudo apt-get install bowtie2
-
-# Via Conda
-conda install bowtie2
-```
 ## Preeliminars:
-As example, we will obtain illumina shotgun sequencing data used to assemble ther recent gallus gallus 6 genome (galGal6, sra accession SRR3954707). We will align those reads to the fasta reference galGal6.fa in order to obtain a bam file, suitable for the pipeline (using 40 threads):
+As example, we will obtain illumina RNA-seq data used to annotate the gallus gallus genome version 6 (galGal6, sra accession SRR3954707). We will download the fastq reads from male/female cerebrum RNA sequencing and we will align those reads to the fasta reference galGal6.fa by using HISAT2. Then, we will merge both alignments in order to obtain a single reference BAM file (reference.sorted.bam):
 
 ```
-fastq-dump -Z SRR3954707 > illumina_1.fastq
-bowtie2-build galGal6.fa galGal6 --threads 40
-bowtie2 -p 40 -x galGal6 illumina_1.fastq > reference.sam
-samtools sort reference.sam > reference.sorted.bam -@ 40
+fastq-dump -Z ERS353502 > cerebrum_male.fastq
+fastq-dump -Z ERS353502 > cerebrum_female.fastq
+hisat2 -p 60 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_male.fastq -S cerebrum_male.sam
+hisat2 -p 60 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_female.fastq -S cerebrum_female.sam
+samtools merge reference.sam cerebrum_male.sam cerebrum_female.sam
+samtools sort reference.sam > reference.sorted.bam -@ 55
+rm *.sam
 ```
-Now reference.sorted.bam file can be used to compare any sequencing (RNA-seq/WES/WGS) aligned to galGal6 genome, as specified in the next section. 
+Now reference.sorted.bam file can be used to compare any other RNA-seq aligned to galGal6 genome, as specified in the next section. 
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
