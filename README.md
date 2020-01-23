@@ -107,13 +107,13 @@ sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 
 ## Preeliminars:
-As example, we will obtain illumina RNA-seq data used to annotate the gallus gallus genome version 6 (galGal6, sra accession SRR3954707). We will download the fastq reads from male/female cerebrum RNA sequencing and we will align those reads to the fasta reference galGal6.fa by using HISAT2. Then, we will merge both alignments in order to obtain a single reference BAM file (reference.sorted.bam):
+As example, we will obtain illumina RNA-seq data used to annotate the gallus gallus genome version 6 (galGal6, sra accession SRR3954707). We will download the fastq reads from male/female cerebrum RNA sequencing and we will align those reads to the fasta reference galGal6.fa by using HISAT2 (40 threads). Then, we will merge both alignments in order to obtain a single reference BAM file (reference.sorted.bam):
 
 ```
 fastq-dump -Z ERS353502 > cerebrum_male.fastq
 fastq-dump -Z ERS353502 > cerebrum_female.fastq
-hisat2 -p 60 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_male.fastq -S cerebrum_male.sam
-hisat2 -p 60 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_female.fastq -S cerebrum_female.sam
+hisat2 -p 40 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_male.fastq -S cerebrum_male.sam
+hisat2 -p 40 -x /home/lrt/brain_chicken/PacBio/haplotypes/hisat2_index/galGal6 cerebrum_female.fastq -S cerebrum_female.sam
 samtools merge reference.sam cerebrum_male.sam cerebrum_female.sam
 samtools sort reference.sam > reference.sorted.bam -@ 55
 rm *.sam
@@ -135,7 +135,7 @@ cp bash_scripts/* ./galGal6_analysis/
 # Copying relevant R script to galGal6_analysis
 cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
 
-# Place reference (illumina WGS bam file) and target RNA-seq bam file into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name reference WGS sequencing as "reference.bam" and target RNA-seq sequencing as "target.bam" 
+# Place reference (illumina RNA-seq bam file) and target RNA-seq bam file into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name reference WGS sequencing as "reference.bam" and target RNA-seq sequencing as "target.bam" 
 cp /some_directory/reference.bam ./galGal6_analysis/
 cp /some_directory/target.bam ./galGal6_analysis/
 
