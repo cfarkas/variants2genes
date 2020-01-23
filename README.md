@@ -107,7 +107,7 @@ sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 
 ## Preeliminars:
-As example, we will obtain illumina RNA-seq data used to annotate the gallus gallus genome version 6 (galGal6, sra accession SRR3954707). We will download the fastq reads from male/female cerebrum RNA sequencing and we will align those reads to the fasta reference galGal6.fa by using HISAT2 (40 threads). Then, we will merge both alignments in order to obtain a single reference BAM file (reference.sorted.bam):
+As example, we will obtain illumina RNA-seq data used to annotate the gallus gallus genome version 6 (galGal6, sra accession SRR3954707). We will download the fastq reads from male/female brain RNA sequencing and we will align those reads to the fasta reference galGal6.fa by using HISAT2 (40 threads). Then, we will merge both alignments in order to obtain a single reference BAM file (reference.sorted.bam):
 
 ```
 fastq-dump -Z ERS353502 > cerebrum_male.fastq
