@@ -154,7 +154,7 @@ Case_chr32<-subset(Case_chr32, select = c(2))
 Case_chr33<-subset(Case_chr33, select = c(2))
 Case_chrZ<-subset(Case_chrZ, select = c(2))
 
-par(mfrow=c(3,10))
+par(mfrow=c(4,10))
 
 Control_chr1$Condition<-"Control"
 Case_chr1$Condition<-"Case"
@@ -425,7 +425,7 @@ grid_arrange_shared_legend <- function(..., ncol = length(list(...)), nrow = 1, 
 
 dsamp <- diamonds[sample(nrow(diamonds), 1000), ]
 
-g <- grid_arrange_shared_legend(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, p30, p31, p32, p33, pZ, ncol = 4, nrow=6)
+g <- grid_arrange_shared_legend(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, p30, p31, p32, p33, pZ, ncol = 6, nrow=6)
 ggsave("graph.pdf", g, width=50, height=52, units="cm")
 
 dev.off()
