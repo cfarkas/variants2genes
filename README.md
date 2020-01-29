@@ -108,7 +108,7 @@ sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and seven days of chick development. The illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes in both samples for variant characterization, when comparing within days. We will employ as target.bam the 7-day RNA sequencing, and the 4-dat RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
+- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and 7 days of development. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes in both samples for variant characterization, when comparing within days. We will employ as target.bam the 7-day RNA sequencing, and the 4-dat RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
 
 ```
 git clone https://github.com/cfarkas/variants2genes
@@ -148,7 +148,7 @@ bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
 
 ## Employing user-provided GTF files:
 
-Important: If users have their own annotation file, their can use it in the pipeline, if desired. Their must replace {genome}.gtf file, automatically obtained in STEP 1 for their own GTF file, with the same name. As example, employing user-provided "final_annotated.gtf" instead galGal6.gtf in STEP 1:
+Important: If users have their own annotation file, their can use it in the pipeline, if desired. Their must replace {genome}.gtf file, automatically obtained in STEP 1 for their own GTF file, with the same name. As example, we will use "final_annotated.gtf" instead galGal6.gtf in STEP 1:
 
 ```
 ## STEP 1
