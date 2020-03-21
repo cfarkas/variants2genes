@@ -108,7 +108,7 @@ sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and 7 days of development. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes in both samples for variant characterization, when comparing within days. We will employ as target.bam the 7-day RNA sequencing, and the 4-dat RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
+- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and 7 days of development. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes in both samples for variant characterization, when comparing within days. We will employ as target.bam the 7-day RNA sequencing, and the 4-day RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
 
 ```
 git clone https://github.com/cfarkas/variants2genes
