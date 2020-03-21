@@ -121,7 +121,7 @@ cp bash_scripts/* ./galGal6_analysis/
 # Copying relevant R script to galGal6_analysis
 cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
 
-# Place reference (illumina RNA-seq bam file) and target RNA-seq bam file into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name 4-day RNA-seq as "reference.bam" and 7-day RNA-seq as "target.bam" 
+# Place reference and target RNA-seq bam file (illumina technology) into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name 4-day RNA-seq as "reference.bam" and 7-day RNA-seq as "target.bam" 
 
 cp /some_directory/reference.bam ./galGal6_analysis/
 cp /some_directory/target.bam ./galGal6_analysis/
