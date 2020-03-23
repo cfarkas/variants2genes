@@ -121,10 +121,10 @@ cp bash_scripts/* ./galGal6_analysis/
 # Copying relevant R script to galGal6_analysis
 cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
 
-# Place reference and target RNA-seq bam file (illumina technology) into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name 4-day RNA-seq as "reference.bam" and 7-day RNA-seq as "target.bam" 
+# Place reference and target RNA-seq bam file (illumina technology) into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name 4-day RNA-seq as "control.bam" and 7-day RNA-seq as "case.bam" 
 
-cp /some_directory/reference.bam ./galGal6_analysis/
-cp /some_directory/target.bam ./galGal6_analysis/
+cp /some_directory/control.bam ./galGal6_analysis/
+cp /some_directory/case.bam ./galGal6_analysis/
 
 #######################
 ### Pipeline Starts ###
@@ -135,13 +135,13 @@ cd galGal6_analysis/
 bash genome_download.sh galGal6
 
 ## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
-bash sort_bam.sh reference.bam target.bam 40
+bash sort_bam.sh control.bam case.bam 40
 
-## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
-bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R 
+## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (for "good" sequencing, check graph.pdf)
+bash plot-coverage.sh control.sorted.bam case.sorted.bam bam_coverage_chicken.R 
 
 ## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa galGal6.gtf 40
+bash variants2genes.sh control.sorted.bam case.sorted.bam galGal6.fa galGal6.gtf 40
 
 # All done. Check target sub-folder in ./galGal6_analysis with output files.
 ```
@@ -152,12 +152,12 @@ Important: If users have their own genome and/or annotation file, their can use 
 
 ```
 ## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
-bash sort_bam.sh reference.bam target.bam 40
+bash sort_bam.sh control.bam case.bam 40
 
-## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
-bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R
+## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (for "good" sequencing, check graph.pdf)
+bash plot-coverage.sh control.sorted.bam case.sorted.bam bam_coverage_chicken.R 
 
 ## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh reference.sorted.bam target.sorted.bam my_genome.fa final_annotated.gtf 40
+bash variants2genes.sh control.sorted.bam case.sorted.bam my_genome.fa final_annotated.gtf 40
 
 ```
