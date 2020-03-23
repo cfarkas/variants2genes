@@ -4,7 +4,7 @@ Obtaining case-linked variants and correspondent genes (from control/case experi
 ## Pipeline Outline
 
 variants2genes are a set of bash scripts that address (based on several well-known genomic tools) case associated variants (with correspondent genes) 
-between two matched samples from RNA-seq/WES/WGS data. The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
+between two matched samples from RNA-seq/WES/WGS data. The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes using intersecting the output from bcftools and strelka somatic variant calling: https://github.com/Illumina/strelka. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
 The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse, Rat and Chicken.
 
 ## Installation requirements:
@@ -141,21 +141,23 @@ bash sort_bam.sh reference.bam target.bam 40
 bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R 
 
 ## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa 40
+bash variants2genes.sh reference.sorted.bam target.sorted.bam galGal6.fa galGal6.gtf 40
 
 # All done. Check target sub-folder in ./galGal6_analysis with output files.
 ```
 
-## Employing user-provided GTF files:
+## Employing user-provided genome and/or GTF files:
 
-Important: If users have their own annotation file, their can use it in the pipeline, if desired. Their must replace {genome}.gtf file, automatically obtained in STEP 1 for their own GTF file, with the same name. As example, we will use "final_annotated.gtf" instead galGal6.gtf in STEP 1:
+Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must skip STEP 1 and continue next steps. As example, we will use "my_genome.fa" and "final_annotated.gtf" instead of galGal6.fa and galGal6.gtf in STEP 1:
 
 ```
-## STEP 1
-cd galGal6_analysis/
-bash genome_download.sh galGal6
-rm galGal6.gtf
-cp /some_directory/final_annotated.gtf ./galGal6.gtf
+## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
+bash sort_bam.sh reference.bam target.bam 40
 
-## STEP 2,3 and 4 continue as previously specified
+## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (check graph.pdf)
+bash plot-coverage.sh reference.sorted.bam target.sorted.bam bam_coverage_chicken.R
+
+## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
+bash variants2genes.sh reference.sorted.bam target.sorted.bam my_genome.fa final_annotated.gtf 40
+
 ```
