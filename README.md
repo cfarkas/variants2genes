@@ -7,6 +7,16 @@ variants2genes are a set of bash scripts that address (based on several well-kno
 between two matched samples from RNA-seq/WES/WGS data. The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes using intersecting the output from bcftools and strelka somatic variant calling: https://github.com/Illumina/strelka. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
 The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse, Rat and Chicken.
 
+Pipeline Outline:
+
+```
+1) Call variants in Control and Case samples using bcftools mpileup.
+2) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
+3) Call germline and somatic variants in both samples using Strelka2 small variant caller.
+4) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. The output from these will be case-linked variants. Case-linked somatic variants and case-linked INDELs were be also reported.   
+```
+Case-linked variants were also be intersected with genomic annotations (in GTF format) in order to obtain case-linked alleles.
+
 ## Installation requirements:
 ### Obtaining and installing R (>=3.2.0)
 See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
@@ -108,7 +118,7 @@ sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and 7 days of development. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes in both samples for variant characterization, when comparing within days. We will employ as target.bam the 7-day RNA sequencing, and the 4-day RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
+- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 4 and 7 days of development. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes (most likely germline variants) in both samples for variant characterization, when comparing within days. This will dissect alleles that varies in expression due genetic variation rather develpment. We will employ as target.bam the 7-day RNA sequencing, and the 4-day RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
 
 ```
 git clone https://github.com/cfarkas/variants2genes
