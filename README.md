@@ -13,9 +13,11 @@ Pipeline Outline:
 1) Call variants in Control and Case samples using bcftools mpileup.
 2) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
 3) Call germline and somatic variants in both samples using Strelka2 small variant caller.
-4) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. The output from these will be case-linked variants. Case-linked somatic variants and case-linked INDELs were be also reported.   
+4) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. 
+
+- The output from these steps will output case-linked variants and correspondent genes. 
+- Case-linked somatic variants and case-linked INDELs were be also reported.
 ```
-Case-linked variants were also be intersected with genomic annotations (in GTF format) in order to obtain case-linked alleles.
 
 ## Installation requirements:
 ### Obtaining and installing R (>=3.2.0)
