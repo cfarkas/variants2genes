@@ -144,6 +144,7 @@ rm Control_initial_filter.vcf
 rm *bcftools.vcf
 echo ""
 
+### Performing Somatic Variant Calling with strelka v2.9.2
 echo "Performing Somatic Variant Calling with strelka v2.9.2:"
 echo ""
 echo "for documentation, please see: https://github.com/Illumina/strelka"
@@ -156,6 +157,7 @@ echo "run demo to check successful installation"
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaSomaticWorkflowDemo.bash
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaGermlineWorkflowDemo.bash
 echo "demo run was succesfull"
+echo ""
 echo "Running on control and case samples: Collecting Germline variants:"
 echo ""
 # configuration
@@ -203,7 +205,7 @@ echo ""
 echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
 echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
-vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} > Case.filtered.strelka.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.strelka.vcf
 echo "Done"
 
 ### Annotating variants and obtaining gene list
@@ -230,6 +232,8 @@ echo ""
 echo "Adding gene count detection to the list of genes with variants"
 join <(sort genes_with_variants.tabular) <(sort count_table.tabular) > ${case_name}_quantification.tabular
 echo ""
+
+### Output files
 echo "All done. ${case_name}_quantification.tabular contains the list of genes with case associated-variants plus gene expression quantification in both samples"
 echo ""
 mkdir ${case_name} 
