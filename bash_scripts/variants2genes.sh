@@ -179,7 +179,6 @@ cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf > st
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
-
 echo "Continue with Somatic Variant Calling"
 # configuration
 begin=`date +%s`
@@ -187,9 +186,9 @@ begin=`date +%s`
     --normalBam ${1} \
     --tumorBam ${2} \
     --referenceFasta ${3} \
-    --runDir demo_somatic
+    --runDir strelka_somatic
 # execution on a single local machine with n parallel jobs
-demo_somatic/runWorkflow.py -m local -j ${5}
+strelka_somatic/runWorkflow.py -m local -j ${5}
 echo "Variant Calling done"
 end=`date +%s`
 elapsed=`expr $end - $begin`
@@ -204,7 +203,7 @@ echo ""
 echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
 echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
-vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.strelka.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} > Case.filtered.strelka.vcf
 echo "Done"
 
 ### Annotating variants and obtaining gene list
