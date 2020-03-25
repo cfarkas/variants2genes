@@ -202,6 +202,13 @@ grep "PASS" strelka_somatic_variants.vcf > strelka_somatic_variants_PASS.vcf
 cat strelka_somatic_variants_header.vcf strelka_somatic_variants_PASS.vcf > strelka_somatic_variants.filtered.vcf
 rm strelka_somatic_variants_header.vcf strelka_somatic_variants_PASS.vcf
 echo ""
+cp ./strelka_somatic/results/variants/somatic.indels.vcf.gz ./strelka_somatic_indels.vcf.gz
+bgzip -d strelka_somatic_indels.vcf.gz
+grep "#" strelka_somatic_indels.vcf > strelka_somatic_indels_header.vcf
+grep "PASS" strelka_somatic_indels.vcf > strelka_somatic_indels_PASS.vcf
+cat strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf > strelka_somatic_indels.filtered.vcf
+rm strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf
+echo ""
 echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
 echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
@@ -236,13 +243,14 @@ echo ""
 ### Output files
 echo "All done. ${case_name}_quantification.tabular contains the list of genes with case associated-variants plus gene expression quantification in both samples"
 echo ""
-mkdir ${case_name} 
+mkdir ${case_name}
+rm Case.filtered.vcf
 mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf count_table.tabular ${case_name}_quantification.tabular *.filtered.vcf ./${case_name}
 echo "The following files are located in the the ./${case_name} folder"
 echo ""
-echo "(1) Case.filtered.strelka.gtf" 
-echo "(2) genes_with_variants.tabular"    
-echo "(3) Case.filtered.strelka.vcf"              
+echo "(1) Case.filtered.strelka.gtf"     
+echo "(2) Case.filtered.strelka.vcf"    
+echo "(3) genes_with_variants.tabular"
 echo "(4) count_table.tabular"
 echo "(5) ${case_name}_quantification.tabular"
 echo "(6) strelka_germline_variants.filtered.vcf"
@@ -252,13 +260,13 @@ echo ""
 echo "Corresponding to:"
 echo ""
 echo "(1): Case associated variants in GTF format"
-echo "(2): List of genes with variants in tabular format"
-echo "(3): Case-associated variants in VCF format"
+echo "(2): Case-associated variants in VCF format"
+echo "(3): List of genes with variants in tabular format"
 echo "(4): Count table (gene_id) of Control and Case bam files"
 echo "(5): List of genes with variants plus gene quantification in Control and Case bam files, respectively"
 echo "(6): Strelka germline variants"
 echo "(7): Strelka somatic variants associated with case bam file"
-echo "(7): Strelka somatic indels associated with case bam file"
+echo "(8): Strelka somatic indels associated with case bam file"
 echo "....................................................................................................."
 
 #
