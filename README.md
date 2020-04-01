@@ -66,7 +66,7 @@ git clone --recursive git://github.com/vcflib/vcflib.git
 
 #Enter vcflib directory and make
 cd vcflib
-make   
+make   # Needs CMake compiler, with sudo privileges do: sudo apt-get install cmake
 
 #After make, binaries and scripts can be copied in /usr/local/bin with sudo. In vcflib/ directory:
 
