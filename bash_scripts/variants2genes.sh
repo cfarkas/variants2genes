@@ -210,10 +210,17 @@ rm strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf
 echo ""
 echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
+
+# Filtering Case.filtered.vcf variants file with strelka outputs
 echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
-vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.st.vcf
-vcfintersect -i strelka_somatic_variants.filtered.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
-rm Case.filtered.st.vcf
+cat strelka_somatic_indels.filtered.vcf strelka_somatic_variants.filtered.vcf > strelka_all_somatic.vcf
+grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
+grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
+cat strelka_somatic_header.vcf strelka_somatic_SNVs.vcf > strelka_somatic.vcf
+rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r GRCm38.p6.genome.fa --invert > Case.filtered.st.vcf
+vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
+rm Case.filtered.st.vcf strelka_somatic.vcf
 echo "Done"
 
 ### Annotating variants and obtaining gene list
