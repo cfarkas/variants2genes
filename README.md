@@ -96,6 +96,11 @@ Then in a terminal type
 
 to check 1.9 versions (using htslib v1.9)
 
+### Obtaining tabix (v >= 1.7-2, to decompress .vfc.gz files from bcftools output).
+```
+sudo apt install tabix
+```
+
 ### Obtaining and installing BamTools
 Complete instructions can be found in https://github.com/pezmaster31/bamtools/wiki/Building-and-installing. Users with privileges can accomplish with sudo: 
 
