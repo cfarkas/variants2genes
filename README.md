@@ -78,8 +78,9 @@ sudo cp bin/* /usr/local/bin/
 
 ### Obtaining and Installing BEDTools
 Complete instructions can be found in https://bedtools.readthedocs.io/en/latest/content/installation.html. Users with privileges can accomplish with sudo: 
-
->sudo apt-get install bedtools
+```
+sudo apt-get install bedtools
+```
 
 ### Obtaining and installing up-to-date SAMtools, bcftools and htslib (version 1.9)
 Old samtools version will not work. Users needs to install version up to date of these three packages. Users can first install htslib v1.9 and then samtools with bcftools v1.9, respectively. For downloading these packages, see http://www.htslib.org/download/). The latter can be accomplish by downloading the three packages, decompressing it, and doing the following:
@@ -96,7 +97,7 @@ Then in a terminal type
 
 to check 1.9 versions (using htslib v1.9)
 
-### Obtaining tabix (v >= 1.7-2, to decompress .vfc.gz files from bcftools output).
+### Obtaining tabix (version >= 1.7, to decompress .vfc.gz files from bcftools output).
 ```
 sudo apt install tabix
 ```
