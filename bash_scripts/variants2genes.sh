@@ -139,7 +139,6 @@ echo "Done"
 echo "Initially filtered Case-associated variants are named Case.filtered.vcf"
 rm Control.bed filter_merged.bed Control.merged.bed control_counts
 rm case_variants*
-rm *.filter1.vcf
 rm Control_initial_filter.vcf
 rm *bcftools.vcf
 echo ""
