@@ -212,7 +212,7 @@ echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
 echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
 vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.st.vcf
-vcfintersect -i strelka_somatic_variants.filtered.vcf Case.filtered.strelka.vcf -r ${ref} > Case.filtered.strelka.vcf
+vcfintersect -i strelka_somatic_variants.filtered.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf
 echo "Done"
 
