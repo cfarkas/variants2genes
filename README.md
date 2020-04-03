@@ -142,10 +142,10 @@ unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 ### Cluster installing
-IMPORTANT: After download and compiling, users in clusters without sudo privileges can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster, with user named "cfarkas"
+IMPORTANT: After download and compiling each program as mentioned here, users in clusters without sudo privileges can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster, with user named "cfarkas"
 
 ```
-# Installing latest version of R from source:
+### Installing latest version of R from source.
 wget https://cran.r-project.org/src/base/R-3/R-3.6.3.tar.gz
 gunzip R-3.6.3.tar.gz
 tar -xvf R-3.6.3.tar
@@ -156,18 +156,18 @@ make check
 cd bin
 cp R /home/cfarkas/.local/bin/
 
-# After compiling, in samtools-1.9 and bcftools-1.9 folders: 
+# After compiling SAMtools and BCFtools, do: 
 cp samtools /home/cfarkas/.local/bin/
 cp bcftools /home/cfarkas/.local/bin/
 
-# After compiling, in vcflib folder
+# After compiling vcflib, do: 
 cp scripts/* /home/cfarkas/.local/bin/
 cp bin/* /home/cfarkas/.local/bin/
 
-# After downloading, in sratoolkit.2.9.6-ubuntu64 folder
+# After downloading and decompress sratoolkit, in sratoolkit.2.9.6-ubuntu64 folder do:
 cp ./bin/fastq-dump /home/cfarkas/.local/bin/
 ```
-And so on. For the rest of the programs, check provided webpages.
+And so on. For the rest of the programs, check provided webpages for compliling and also copy to ./local/bin.
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
