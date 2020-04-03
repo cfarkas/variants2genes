@@ -164,7 +164,9 @@ cp bcftools /home/cfarkas/.local/bin/
 cp scripts/* /home/cfarkas/.local/bin/
 cp bin/* /home/cfarkas/.local/bin/
 
-# After downloading hisat2-2.1.0, inside hisat2-2.1.0 folder, do: 
+# After downloading hisat2-2.1.0 source code from here: http://ccb.jhu.edu/software/hisat2/manual.shtml, do: 
+unzip hisat2-2.1.0-Linux_x86_64.zip
+cd hisat2-2.1.0
 cp hisat* /home/cfarkas/.local/bin/
 
 # After downloading and decompress sratoolkit, in sratoolkit.2.9.6-ubuntu64 folder do:
