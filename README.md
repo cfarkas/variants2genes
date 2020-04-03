@@ -24,7 +24,7 @@ Pipeline Outline:
 
 ## Installation requirements:
 ### Obtaining and installing R (>=3.2.0)
-See https://cloud.r-project.org/ for R installation in linux/ubuntu. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
+See https://cran.r-project.org/sources.html for R installation in linux/ubuntu and windows. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
 ```
 # Removing R from system
 sudo apt-get remove r-base-core
@@ -39,7 +39,6 @@ sudo apt update; sudo apt install r-base
 exit
 R
 ```
-To install from source, check here: https://cran.r-project.org/sources.html
 
 The following R packages are required for the script usages:
 
@@ -96,7 +95,7 @@ tar -xvf samtools-1.10.tar
 bzip2 -d bcftools-1.10.2.tar.bz2
 tar -xvf bcftools-1.10.2.tar
 
-# To install: 
+# To install these packages: 
 cd htslib-1.9    # and similarly for bcftools and samtools
 sudo ./configure --prefix=/usr/local/bin
 sudo make
