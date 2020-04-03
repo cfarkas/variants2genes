@@ -164,6 +164,23 @@ cp bcftools /home/cfarkas/.local/bin/
 cp scripts/* /home/cfarkas/.local/bin/
 cp bin/* /home/cfarkas/.local/bin/
 
+### Installing subread
+wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+gunzip subread-2.0.0-source.tar.gz
+tar -xvf subread-2.0.0-source.tar
+cd subread-2.0.0-source
+cd src
+make -f Makefile.Linux
+cd ..
+cp exactSNP featureCounts subindel subjunc sublong subread-align subread-buildindex /home/cfarkas/.local/bin/
+
+### Installing bedtools
+wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+tar -zxvf bedtools-2.29.1.tar.gz.1
+cd bedtools2
+make
+cp ./bin/* /home/cfarkas/.local/bin/
+
 # After downloading hisat2-2.1.0 source code from here: http://ccb.jhu.edu/software/hisat2/manual.shtml, do: 
 unzip hisat2-2.1.0-Linux_x86_64.zip
 cd hisat2-2.1.0
@@ -172,7 +189,7 @@ cp hisat* /home/cfarkas/.local/bin/
 # After downloading and decompress sratoolkit, in sratoolkit.2.9.6-ubuntu64 folder do:
 cp ./bin/fastq-dump /home/cfarkas/.local/bin/
 ```
-And so on. For the rest of the programs, check provided webpages for complilation and also copy the programs to home/cfarkas/.local/bin (for this example). 
+And so on. For the rest of the programs, check provided webpages for complilation and also copy the programs to home/cfarkas/.local/bin as shown in these examples. 
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
