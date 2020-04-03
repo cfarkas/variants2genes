@@ -73,7 +73,7 @@ make   # Needs CMake compiler, with sudo privileges do: sudo apt-get install cma
 sudo cp scripts/* /usr/local/bin/
 sudo cp bin/* /usr/local/bin/
 
-#To check vcflib scripts, type vcf in terminal followed by TAB and display all posibilities
+# To check vcflib scripts, type vcf in terminal followed by TAB and display all posibilities
 ```
 
 ### Obtaining and Installing BEDTools
@@ -109,6 +109,7 @@ Then in a terminal type
 to check 1.9 versions (using htslib v1.9)
 
 ### Obtaining tabix (version >= 1.7, to decompress .vfc.gz files from bcftools output).
+For detailed install, check here: http://wiki.wubrowse.org/How_to_install_tabix. User with root privileges can do: 
 ```
 sudo apt install tabix
 ```
@@ -140,6 +141,33 @@ wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
+### Cluster installing
+IMPORTANT: After download and compiling, users in clusters without sudo privileges can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster, with user named "cfarkas"
+
+```
+# Installing latest version of R from source:
+wget https://cran.r-project.org/src/base/R-3/R-3.6.3.tar.gz
+gunzip R-3.6.3.tar.gz
+tar -xvf R-3.6.3.tar
+cd R-3.6.3
+./configure
+make
+make check
+cd bin
+cp R /home/cfarkas/.local/bin/
+
+# After compiling, in samtools-1.9 and bcftools-1.9 folders: 
+cp samtools /home/cfarkas/.local/bin/
+cp bcftools /home/cfarkas/.local/bin/
+
+# After compiling, in vcflib folder
+cp scripts/* /home/cfarkas/.local/bin/
+cp bin/* /home/cfarkas/.local/bin/
+
+# After downloading, in sratoolkit.2.9.6-ubuntu64 folder
+cp ./bin/fastq-dump /home/cfarkas/.local/bin/
+```
+And so on. For the rest of the programs, check provided webpages.
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
