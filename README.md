@@ -39,6 +39,7 @@ sudo apt update; sudo apt install r-base
 exit
 R
 ```
+To install from source, check here: https://cran.r-project.org/sources.html
 
 The following R packages are required for the script usages:
 
@@ -85,6 +86,17 @@ sudo apt-get install bedtools
 ### Obtaining and installing up-to-date SAMtools, bcftools and htslib (version 1.9)
 Old samtools version will not work. Users needs to install version up to date of these three packages. Users can first install htslib v1.9 and then samtools with bcftools v1.9, respectively. For downloading these packages, see http://www.htslib.org/download/). The latter can be accomplish by downloading the three packages, decompressing it, and doing the following:
 ```
+wget https://github.com/samtools/htslib/releases/download/1.10.2/htslib-1.10.2.tar.bz2
+wget https://github.com/samtools/samtools/releases/download/1.10/samtools-1.10.tar.bz2
+wget https://github.com/samtools/bcftools/releases/download/1.10.2/bcftools-1.10.2.tar.bz2
+bzip2 -d htslib-1.10.2.tar.bz2
+tar -xvf htslib-1.10.2.tar
+bzip2 -d samtools-1.10.tar.bz2
+tar -xvf samtools-1.10.tar
+bzip2 -d bcftools-1.10.2.tar.bz2
+tar -xvf bcftools-1.10.2.tar
+
+# To install: 
 cd htslib-1.9    # and similarly for bcftools and samtools
 sudo ./configure --prefix=/usr/local/bin
 sudo make
