@@ -167,7 +167,7 @@ cp bin/* /home/cfarkas/.local/bin/
 # After downloading and decompress sratoolkit, in sratoolkit.2.9.6-ubuntu64 folder do:
 cp ./bin/fastq-dump /home/cfarkas/.local/bin/
 ```
-And so on. For the rest of the programs, check provided webpages for compliling and also copy to ./local/bin.
+And so on. For the rest of the programs, check provided webpages for complilation and also copy the programs to home/cfarkas/.local/bin (for this example). 
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
