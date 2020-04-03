@@ -142,7 +142,7 @@ unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
 ### Cluster installing
-IMPORTANT: After download and compiling each program as mentioned here, users in clusters without sudo privileges can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster, with user named "cfarkas"
+IMPORTANT: After download and compiling each program as mentioned here, users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
 
 ```
 ### Installing latest version of R from source.
