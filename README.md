@@ -135,6 +135,7 @@ sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
 
 ```
 ### Obtaining HISAT2 aligner (for aligning RNA-seq data).
+for detailed install instructions check here: http://ccb.jhu.edu/software/hisat2/manual.shtml . The pre-compiled version for linux can be obtained from this webpage as follows: 
 ```
 wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_64.zip
 unzip hisat2-2.0.4-Linux_x86_64.zip
