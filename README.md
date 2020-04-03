@@ -141,8 +141,8 @@ wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
-### Cluster installing
-IMPORTANT: After download and compiling each program as mentioned here, users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
+## Cluster installing
+IMPORTANT: Users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
 
 ```
 ### Installing latest version of R from source.
@@ -154,13 +154,13 @@ cd R-3.6.3
 make
 make check
 cd bin
-cp R /home/cfarkas/.local/bin/
+cp R /home/cfarkas/.local/bin/   # Continue typing R in shell and R installing packages
 
-# After compiling SAMtools and BCFtools, do: 
+# After compiling SAMtools and BCFtools as previously shown, do: 
 cp samtools /home/cfarkas/.local/bin/
 cp bcftools /home/cfarkas/.local/bin/
 
-# After compiling vcflib, do: 
+# After compiling vcflib as previously shown, do: 
 cp scripts/* /home/cfarkas/.local/bin/
 cp bin/* /home/cfarkas/.local/bin/
 
