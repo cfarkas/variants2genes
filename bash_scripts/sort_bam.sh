@@ -10,11 +10,11 @@ if [ "$1" == "-h" ]; then
   echo ""
   echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants."
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
@@ -24,11 +24,11 @@ if [ "$1" == "-help" ]; then
   echo ""
   echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 if [ "$1" == "--h" ]; then
@@ -37,11 +37,11 @@ if [ "$1" == "--h" ]; then
   echo ""
   echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
@@ -51,11 +51,11 @@ if [ "$1" == "--help" ]; then
   echo ""
   echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
