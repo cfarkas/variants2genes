@@ -9,79 +9,79 @@ threads=${5}
 
 if [ "$1" == "-h" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
   echo ""
-  echo "This script will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants."
+  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Reference: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
+  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
   echo ""
-  echo "GTF: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
+  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
 if [ "$1" == "-help" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
   echo ""
-  echo "This script will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants."
+  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Reference: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
+  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
   echo ""
-  echo "GTF: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
+  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 if [ "$1" == "--h" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
   echo ""
-  echo "This script will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants."
+  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Reference: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
+  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
   echo ""
-  echo "GTF: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
+  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
 if [ "$1" == "--help" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
   echo ""
-  echo "This script will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants."
+  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
-  echo "Control Bam File: File of path to Control bam file"
+  echo "[Control Bam File]: File of path to Control bam file"
   echo ""
-  echo "Case Bam File: File of path to Case bam file"
+  echo "[Case Bam File]: File of path to Case bam file"
   echo ""
-  echo "Reference: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
+  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
   echo ""
-  echo "GTF: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
+  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
   echo ""
-  echo "Threads: Number of CPUs for the task (integer)"
+  echo "[Threads]: Number of CPUs for the task (integer)"
   exit 0
 fi
 
-[ $# -eq 0 ] && { echo "Usage: bash ./`basename $0` {Control Bam file} {Case Bam file} {Reference} {GTF} {Threads}"; exit 1; }
+[ $# -eq 0 ] && { echo "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Reference] [GTF] [Threads]"; exit 1; }
 
 if [ $# -ne 5 ]; then
-  echo 1>&2 "Usage: bash ./`basename $0` {Control Bam file} {Case Bam file} {Reference} {GTF} {Threads}"
+  echo 1>&2 "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Reference] [GTF] [Threads]"
   exit 3
 fi
 dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
