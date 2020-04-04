@@ -6,9 +6,9 @@ threads=${3}
 
 if [ "$1" == "-h" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Threads]"
   echo ""
-  echo "This script will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants."
+  echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants."
   echo ""
   echo "Control Bam File: File of path to Control bam file"
   echo ""
@@ -20,9 +20,9 @@ fi
 
 if [ "$1" == "-help" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Threads]"
   echo ""
-  echo "This script will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
+  echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
   echo "Control Bam File: File of path to Control bam file"
   echo ""
@@ -33,9 +33,9 @@ if [ "$1" == "-help" ]; then
 fi
 if [ "$1" == "--h" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Threads]"
   echo ""
-  echo "This script will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
+  echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
   echo "Control Bam File: File of path to Control bam file"
   echo ""
@@ -47,9 +47,9 @@ fi
 
 if [ "$1" == "--help" ]; then
   echo ""
-  echo "Usage: bash ./`basename $0` {Control Bam File} {Case Bam File} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Threads]"
   echo ""
-  echo "This script will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
+  echo "This program will call variants using freebayes-parallel in Control and Case bam files to obtain case-ligated variants"
   echo ""
   echo "Control Bam File: File of path to Control bam file"
   echo ""
@@ -59,10 +59,10 @@ if [ "$1" == "--help" ]; then
   exit 0
 fi
 
-[ $# -eq 0 ] && { echo "Usage: bash ./`basename $0` {Control Bam file} {Case Bam file} {Threads}"; exit 1; }
+[ $# -eq 0 ] && { echo "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Threads]"; exit 1; }
 
 if [ $# -ne 3 ]; then
-  echo 1>&2 "Usage: bash ./`basename $0` {Control Bam file} {Case Bam file} {Threads}"
+  echo 1>&2 "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Threads]"
   exit 3
 fi
 dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
