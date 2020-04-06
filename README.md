@@ -237,7 +237,7 @@ hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR826746
 ./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-bash variants2genes.sh control.sorted.bam case.sorted.bam mm10.fa mm10.gtf 20
+./variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
 
 # All done. Check KO sub-folder with output files.
 ```
@@ -262,7 +262,7 @@ hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8
 ./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-bash variants2genes.sh control.sorted.bam case.sorted.bam my_genome.fa final_annotated.gtf 20
+./variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa final_annotated.gtf 20
 ```
 
 ### Notes
