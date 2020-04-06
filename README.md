@@ -141,7 +141,7 @@ wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
-## Cluster installing
+# Cluster installing
 IMPORTANT: Users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
 
 ```
