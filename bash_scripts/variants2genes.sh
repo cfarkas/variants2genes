@@ -218,7 +218,7 @@ grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
 cat strelka_somatic_header.vcf strelka_somatic_SNVs.vcf > strelka_somatic.vcf
 rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
-vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r GRCm38.p6.genome.fa --invert > Case.filtered.st.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.st.vcf
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf strelka_somatic.vcf
 echo "Done"
