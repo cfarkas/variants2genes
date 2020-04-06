@@ -203,7 +203,7 @@ bash makefile
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). After make, inside variants2genes folder execute the following steps:
+- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). It is important to denominate every bam file with a name without points in the middle (e.g.: WT.bam vs KO.bam or Control.bam vs Case.bam and NOT Control.1.bam) since the pipeline will fail with complex names and points in it. After installation, inside variants2genes folder execute the following steps:
 
 ```
 # Inside variants2genes folder
@@ -215,53 +215,54 @@ cp ./bin/* ./SALL2_WT_vs_KO/
 # Copying relevant R script to SALL2_WT_vs_KO
 cp ./R_scripts/bam_coverage_mouse.R ./SALL2_WT_vs_KO/
 
-# Donwloading Next-Seq-500 datasets (WT and KO are splitted in four files) and joining
-fastq-dump -Z --gzip SRR8267474 > WT.1.fastq.gz
-fastq-dump -Z --gzip SRR8267475 > WT.2.fastq.gz
-fastq-dump -Z --gzip SRR8267476 > WT.3.fastq.gz
-fastq-dump -Z --gzip SRR8267477 > WT.4.fastq.gz
-fastq-dump -Z --gzip SRR8267458 > KO.1.fastq.gz
-fastq-dump -Z --gzip SRR8267459 > KO.2.fastq.gz
-fastq-dump -Z --gzip SRR8267460 > KO.3.fastq.gz
-fastq-dump -Z --gzip SRR8267461 > KO.4.fastq.gz
-cat WT.*.fastq.gz > WT.fastq.gz
-cat KO.*.fastq.gz > KO.fastq.gz
+cd SALL2_WT_vs_KO
 
 #######################
 ### Pipeline Starts ###
 #######################
 
-## STEP1: Download reference genome from UCSC and correspondent GTF file.
+## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
 ./genomeDownload mm10
 hisat2-build mm10.fa mm10_hisat2
-hisat2-align
 
-## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
-bash sort_bam.sh control.bam case.bam 40
+## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions. Give to bam files simple names (WT.bam and KO.bam) 
 
-## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (for "good" sequencing, check graph.pdf)
-bash plot-coverage.sh control.sorted.bam case.sorted.bam bam_coverage_chicken.R 
+hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
+hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
 
-## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh control.sorted.bam case.sorted.bam galGal6.fa galGal6.gtf 40
+## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
+./sortBam WT.bam KO.bam 25
 
-# All done. Check target sub-folder in ./galGal6_analysis with output files.
+## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
+./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+
+## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
+bash variants2genes.sh control.sorted.bam case.sorted.bam mm10.fa mm10.gtf 20
+
+# All done. Check KO sub-folder with output files.
 ```
 
 ## Employing user-provided genome and/or GTF files:
 
-Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must skip STEP 1 and continue next steps. As example, we will use "my_genome.fa" and "final_annotated.gtf" instead of galGal6.fa and galGal6.gtf in STEP 1:
+Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP1 and STEP5. We will run the example using "my_genome.fa" and "final_annotated.gtf" instead of mm10.fa and mm10.gtf as follows:
 
 ```
-## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
-bash sort_bam.sh control.bam case.bam 40
+## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
+hisat2-build my_genome.fa my_genome_hisat2
 
-## STEP 3: Use plot-coverage.sh script to inspect genome-wide coverage (for "good" sequencing, check graph.pdf)
-bash plot-coverage.sh control.sorted.bam case.sorted.bam bam_coverage_chicken.R 
+## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions. Give to bam files simple names (WT.bam and KO.bam) 
 
-## STEP 4: Run variants2genes.sh script to collect Case-linked variants and correspondent genes with variants (using 40 threads)
-bash variants2genes.sh control.sorted.bam case.sorted.bam my_genome.fa final_annotated.gtf 40
+hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
+hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
 
+## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
+./sortBam WT.bam KO.bam 25
+
+## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
+./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+
+## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
+bash variants2genes.sh control.sorted.bam case.sorted.bam my_genome.fa final_annotated.gtf 20
 ```
 
 ### Notes
