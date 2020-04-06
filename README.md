@@ -150,7 +150,7 @@ make
 make check
 cd bin
 cp R /home/cfarkas/.local/bin/
-cp Rscript /home/cfarkas/.local/bin/    # Continue typing R in shell and R installing packages
+cp Rscript /home/cfarkas/.local/bin/    # Continue typing R in shell and install R packages
 
 # After compiling SAMtools and BCFtools as previously shown, do: 
 cp samtools /home/cfarkas/.local/bin/
