@@ -114,12 +114,6 @@ For detailed install, check here: http://wiki.wubrowse.org/How_to_install_tabix.
 sudo apt install tabix
 ```
 
-### Obtaining and installing BamTools
-Complete instructions can be found in https://github.com/pezmaster31/bamtools/wiki/Building-and-installing. Users with privileges can accomplish with sudo: 
-```
-sudo apt install bamtools
-```
-
 ### Obtaining and installing Subread (for using featurecounts)
 Complete instructions can be found in http://subread.sourceforge.net/. Users with privileges can accomplish with sudo: 
 ```
@@ -188,8 +182,14 @@ cp hisat* /home/cfarkas/.local/bin/
 
 # After downloading and decompress sratoolkit, in sratoolkit.2.9.6-ubuntu64 folder do:
 cp ./bin/fastq-dump /home/cfarkas/.local/bin/
+
+# After downloading tabix from here: https://sourceforge.net/projects/samtools/files/tabix/ do:
+tar jxvf tabix-0.2.6.tar.bz2
+make
+cp bgzip tabix /home/cfarkas/.local/bin/
+
 ```
-And so on. For the rest of the programs, check provided webpages for complilation and also copy the programs to home/cfarkas/.local/bin as shown in these examples. 
+
 
 # Installation:
 
