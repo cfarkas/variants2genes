@@ -103,7 +103,7 @@ echo "Generating plot from Control and Case variants across chromosomes..."
 echo ""
 echo "Outputting graph in: ${dir1}"
 echo ""
-Rscript ${3}
+Rscript ${4}
 rm ${control_name}.vcf ${case_name}.vcf Control1.vcf Case1.vcf
 echo ""
 echo "All Done. Check graph.pdf plot to explore variants from Control and Case bam files"
