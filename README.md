@@ -15,7 +15,7 @@ Pipeline Outline:
 ```
 1) Call variants in Control and Case samples using bcftools mpileup.
 2) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
-3) Call germline and somatic variants in both samples using Strelka2 small variant caller.
+3) Call germline and somatic variants in both samples using Strelka2 variant caller.
 4) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. 
 
 - The output from these steps will output case-linked variants and correspondent genes. 
@@ -258,7 +258,7 @@ hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8
 ## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
 ./sortBam WT.bam KO.bam 25
 
-## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
+## STEP 4: Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
 ./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
