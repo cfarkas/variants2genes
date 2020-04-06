@@ -126,8 +126,8 @@ wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.6/sratoolkit.2.9.6-ubuntu64.
 gunzip sratoolkit.2.9.6-ubuntu64.tar.gz
 tar -xvf sratoolkit.2.9.6-ubuntu64.tar
 sudo cp sratoolkit.2.9.6-ubuntu64/bin/fastq-dump /usr/local/bin/
-
 ```
+
 ### Obtaining HISAT2 aligner (for aligning RNA-seq data).
 for detailed install instructions check here: http://ccb.jhu.edu/software/hisat2/manual.shtml . The pre-compiled version for linux can be obtained from this webpage as follows: 
 ```
@@ -135,6 +135,7 @@ wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
+
 # Installation requirements: Cluster installing, without sudo privileges 
 IMPORTANT: Users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
 
@@ -148,7 +149,8 @@ cd R-3.6.3
 make
 make check
 cd bin
-cp R /home/cfarkas/.local/bin/   # Continue typing R in shell and R installing packages
+cp R /home/cfarkas/.local/bin/
+cp Rscript /home/cfarkas/.local/bin/    # Continue typing R in shell and R installing packages
 
 # After compiling SAMtools and BCFtools as previously shown, do: 
 cp samtools /home/cfarkas/.local/bin/
