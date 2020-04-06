@@ -22,7 +22,7 @@ Pipeline Outline:
 - Case-linked somatic variants and case-linked INDELs were be also reported.
 ```
 
-## Installation requirements:
+# Installation requirements (Linux-based systems, with sudo privileges):
 ### Obtaining and installing R (>=3.2.0)
 See https://cran.r-project.org/sources.html for R installation in linux/ubuntu and windows. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
 ```
