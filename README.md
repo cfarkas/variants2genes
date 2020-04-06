@@ -208,10 +208,9 @@ bash makefile
 ```
 # Inside variants2genes folder
 mkdir SALL2_WT_vs_KO
-cd SALL2_WT_vs_KO
 
 # Copying all binaries to SALL2_WT_vs_KO
-cp bin/* ./SALL2_WT_vs_KO/
+cp ./bin/* ./SALL2_WT_vs_KO/
 
 # Copying relevant R script to SALL2_WT_vs_KO
 cp ./R_scripts/bam_coverage_mouse.R ./SALL2_WT_vs_KO/
