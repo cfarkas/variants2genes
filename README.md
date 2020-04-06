@@ -191,33 +191,51 @@ cp ./bin/fastq-dump /home/cfarkas/.local/bin/
 ```
 And so on. For the rest of the programs, check provided webpages for complilation and also copy the programs to home/cfarkas/.local/bin as shown in these examples. 
 
-# Usage:
-## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from a pooled RNA-seq data taken from brain sections at 7 days of development from two substrains. The correspondent illumina reads were aligned against galGal6 genome (gallus gallus version 6). The RNA sequencing comes from an unespecified gallus gallus substrain(s) without reference genome, and we need to dissect haplotypes (most likely germline variants) in both samples for variant characterization, when comparing within days. This will dissect alleles that varies in expression due genetic variation rather develpment. We will employ as target.bam the 7-day RNA sequencing, and the 4-day RNA sequencing as reference.bam. With these two bam files, the whole pipeline can be runned as follows:
+# Installation:
+
+Just three steps in a terminal:
 
 ```
-git clone https://github.com/cfarkas/variants2genes
+git clone https://github.com/cfarkas/variants2genes.git
 cd variants2genes
-mkdir galGal6_analysis
+bash makefile
+```
 
-# Copying all bash scripts to galGal6_analysis
-cp bash_scripts/* ./galGal6_analysis/
+# Usage:
+## Collect haplotypes from RNA-seq data:
+- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). After make, inside variants2genes folder execute the following steps:
 
-# Copying relevant R script to galGal6_analysis
-cp ./R_scripts/bam_coverage_chicken.R ./galGal6_analysis/
+```
+# Inside variants2genes folder
+mkdir SALL2_WT_vs_KO
+cd SALL2_WT_vs_KO
 
-# Place reference and target RNA-seq bam file (illumina technology) into galGal6_analysis folder. IMPORTANT: bam files have to be named with a single word after .bam prefix. In this case we will name 4-day RNA-seq as "control.bam" and 7-day RNA-seq as "case.bam" 
+# Copying all binaries to SALL2_WT_vs_KO
+cp bin/* ./SALL2_WT_vs_KO/
 
-cp /some_directory/control.bam ./galGal6_analysis/
-cp /some_directory/case.bam ./galGal6_analysis/
+# Copying relevant R script to SALL2_WT_vs_KO
+cp ./R_scripts/bam_coverage_mouse.R ./SALL2_WT_vs_KO/
+
+# Donwloading Next-Seq-500 datasets (WT and KO are splitted in four files) and joining
+fastq-dump -Z --gzip SRR8267474 > WT.1.fastq.gz
+fastq-dump -Z --gzip SRR8267475 > WT.2.fastq.gz
+fastq-dump -Z --gzip SRR8267476 > WT.3.fastq.gz
+fastq-dump -Z --gzip SRR8267477 > WT.4.fastq.gz
+fastq-dump -Z --gzip SRR8267458 > KO.1.fastq.gz
+fastq-dump -Z --gzip SRR8267459 > KO.2.fastq.gz
+fastq-dump -Z --gzip SRR8267460 > KO.3.fastq.gz
+fastq-dump -Z --gzip SRR8267461 > KO.4.fastq.gz
+cat WT.*.fastq.gz > WT.fastq.gz
+cat KO.*.fastq.gz > KO.fastq.gz
 
 #######################
 ### Pipeline Starts ###
 #######################
 
-## STEP 1: Inside galGal6_analysis folder, download reference genome from UCSC and correspondent GTF file.
-cd galGal6_analysis/
-bash genome_download.sh galGal6
+## STEP1: Download reference genome from UCSC and correspondent GTF file.
+./genomeDownload mm10
+hisat2-build mm10.fa mm10_hisat2
+hisat2-align
 
 ## STEP 2: Use sort_bam.sh script to sort bam samples using 40 threads
 bash sort_bam.sh control.bam case.bam 40
@@ -246,3 +264,6 @@ bash plot-coverage.sh control.sorted.bam case.sorted.bam bam_coverage_chicken.R
 bash variants2genes.sh control.sorted.bam case.sorted.bam my_genome.fa final_annotated.gtf 40
 
 ```
+
+### Notes
+Compiling automatically uses Shell script compiler shc to make binaries, please check: https://github.com/neurobin/shc. 
