@@ -22,7 +22,7 @@ Pipeline Outline:
 - Case-linked somatic variants and case-linked INDELs were be also reported.
 ```
 
-# Installation requirements (Linux-based systems, with sudo privileges):
+# Installation requirements: Linux-based systems, with sudo privileges:
 ### Obtaining and installing R (>=3.2.0)
 See https://cran.r-project.org/sources.html for R installation in linux/ubuntu and windows. R version 3.2.3 comes from default in Ubuntu 16.04 LTS but users with older Ubuntu distributions must upgrade R. A way accomplish this can be the following:
 ```
@@ -141,7 +141,7 @@ wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.0.4-Linux_x86_
 unzip hisat2-2.0.4-Linux_x86_64.zip
 sudo cp hisat2-2.0.4/hisat2* /usr/local/bin/
 ```
-# Cluster installing
+# Installation requirements: Cluster installing, without sudo privileges 
 IMPORTANT: Users in clusters (without sudo privileges) can copy programs to /home/user/.local/bin/  instead to /usr/local/bin/ . As an example, in centos cluster with user named "cfarkas"
 
 ```
