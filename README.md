@@ -243,6 +243,7 @@ hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR826746
 
 # All done. Check KO sub-folder with output files.
 ```
+From this example, two chr12 and 766 chr14 KO-linked germline variants were discovered.  
 
 ## Employing user-provided genome and/or GTF files:
 
