@@ -94,17 +94,17 @@ echo ""
 ### Filtering and intersecting VCF files
 echo "Filtering with bcftools control and case vcf files..."
 echo ""
-bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${control_name}.vcf > Control1.vcf
-bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > Case1.vcf
-vcffilter -f "QUAL > 30" Control1.vcf > Control.vcf
-vcffilter -f "QUAL > 30" Case1.vcf > Case.vcf
+bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${control_name}.vcf > Controlv.vcf
+bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > Casev.vcf
+vcffilter -f "QUAL > 30" Controlv.vcf > Control.vcf
+vcffilter -f "QUAL > 30" Casev.vcf > Case.vcf
 echo ""
 echo "Generating plot from Control and Case variants across chromosomes..."
 echo ""
 echo "Outputting graph in: ${dir1}"
 echo ""
 Rscript ${4}
-rm ${control_name}.vcf ${case_name}.vcf Control1.vcf Case1.vcf
+rm ${control_name}.vcf ${case_name}.vcf Controlv.vcf Casev.vcf
 echo ""
 echo "All Done. Check graph.pdf plot to explore variants from Control and Case bam files"
 echo ""
