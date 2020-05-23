@@ -176,7 +176,8 @@ cp ./strelka_germline/results/variants/variants.vcf.gz ./strelka_germline_varian
 bgzip -d strelka_germline_variants.vcf.gz
 grep "#" strelka_germline_variants.vcf > strelka_germline_variants_header.vcf
 grep "PASS" strelka_germline_variants.vcf > strelka_germline_variants_PASS.vcf
-cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf > strelka_germline_variants.filtered.vcf
+grep -v "NoPassedVariantGTs" strelka_germline_variants_PASS.vcf > strelka_germline_variants_PASS2.vcf
+cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > strelka_germline_variants.filtered.vcf
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
