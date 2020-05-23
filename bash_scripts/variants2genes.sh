@@ -178,7 +178,7 @@ grep "#" strelka_germline_variants.vcf > strelka_germline_variants_header.vcf
 grep "PASS" strelka_germline_variants.vcf > strelka_germline_variants_PASS.vcf
 grep -v "NoPassedVariantGTs" strelka_germline_variants_PASS.vcf > strelka_germline_variants_PASS2.vcf
 cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > strelka_germline_variants.filtered.vcf
-rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf
+rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf strelka_germline_variants_PASS2.vcf
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
 echo "Continue with Somatic Variant Calling"
