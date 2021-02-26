@@ -25,13 +25,24 @@ Pipeline Outline:
 
 # Installation:
 
-Just three steps in a terminal:
+### Option 1: Installing dependences via anaconda (recommended)
+- requires miniconda, python2.7 and/or python>=3. To install miniconda, see: https://docs.conda.io/en/latest/miniconda.html
+```
+git clone https://github.com/cfarkas/variants2genes.git        # clone repository
+cd variants2genes                                              # enter repository
+conda config --add channels bioconda                           # add bioconda channel (if you haven't already done so)
+conda env update --file environment.yml                        # install required programs
+conda activate variants2genes                                  # load environment
+bash makefile                                                  # make  & install
+```
+- Optionally (requires sudo privileges)
+```
+sudo cp ./bin/* /usr/local/bin/
+```
 
-```
-git clone https://github.com/cfarkas/variants2genes.git
-cd variants2genes
-bash makefile
-```
+### Option 2: Without using conda, program by program:
+
+- see detailed installation steps in our wiki here: https://github.com/cfarkas/annotate_my_genomes.wiki.git
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
