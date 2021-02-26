@@ -4,12 +4,11 @@ cd shc/
 ./configure
 make
 cd ..
-./shc/src/shc -f ./bash_scripts/sort_bam.sh -o sortBam
-./shc/src/shc -f ./bash_scripts/genome_download.sh -o genomeDownload
-./shc/src/shc -f ./bash_scripts/plot-variants.sh -o plotVariants
+./shc/src/shc -f ./bash_scripts/genome_download.sh -o genome-download
+./shc/src/shc -f ./bash_scripts/plot-variants.sh -o plot-variants
 ./shc/src/shc -f ./bash_scripts/variants2genes.sh -o variants2genes
 mkdir bin
-mv sortBam genomeDownload plotVariants variants2genes ./bin/
+mv genome-download plot-variants variants2genes ./bin/
 echo "bin folder containing executable binaries are made"
 echo ""
 echo "make done"
