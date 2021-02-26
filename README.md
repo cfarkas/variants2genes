@@ -82,8 +82,8 @@ hisat2-build mm10.fa mm10_hisat2
 hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
 hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
 
-## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
-./sortBam WT.bam KO.bam 25
+## STEP 3: sort bam samples using 40 threads
+WT.bam KO.bam 25
 
 ## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
 ./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
