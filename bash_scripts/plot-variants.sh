@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e 
+
 control=${1}
 case=${2}
 ref=${3}
