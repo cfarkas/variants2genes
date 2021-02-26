@@ -74,16 +74,17 @@ cd SALL2_WT_vs_KO
 #######################
 
 ## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
-./genomeDownload mm10
+./genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
-## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions. Give to bam files simple names (WT.bam and KO.bam) 
+## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads. Give to bam files simple names (WT.bam and KO.bam) 
 
 hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
 hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
 
-## STEP 3: sort bam samples using 40 threads
-WT.bam KO.bam 25
+## STEP 3: sort bam samples using 25 threads
+samtools sort -o WT.sorted.bam WT.bam -@ 25
+samtools sort -o KO.sorted.bam KO.bam -@ 25
 
 ## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
 ./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
