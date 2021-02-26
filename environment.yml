@@ -11,6 +11,7 @@ dependencies:             # everything under this, installed by conda
 - tabix
 - subread
 - sra-tools
+- ncbi-ngs-sdk
 - hisat2
 - r-ggplot2
 - r-reshape2
