@@ -21,6 +21,7 @@ Pipeline Outline:
 - The output from these steps will output case-linked variants and correspondent genes. 
 - Case-linked somatic variants and case-linked INDELs were be also reported.
 
+```
 
 # Installation:
 
