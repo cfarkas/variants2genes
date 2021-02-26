@@ -1,4 +1,7 @@
 #!/bin/bash
+
+set -e 
+
 {
 
 control=${1}
