@@ -3,7 +3,6 @@ Obtaining case-linked variants and correspondent genes (from control/case experi
 
 ![github_variants2genes](https://user-images.githubusercontent.com/7016350/77459123-d7d06d80-6dc4-11ea-8d21-54a6e7ca9c4b.png)
 
-
 ## Pipeline Outline
 
 variants2genes are a set of bash scripts that address (based on several well-known genomic tools) case associated variants (with correspondent genes) 
@@ -54,7 +53,19 @@ After these steps, a conda enviroment called annotate_my_genomes can be managed 
 - see detailed installation steps in our wiki here: https://github.com/cfarkas/annotate_my_genomes.wiki.git
 
 # Usage:
-## Collect haplotypes from RNA-seq data:
+
+After installation, provide:
+- sorted Control and Case bam files (i.e.: WT and KO, respectively)
+- genome assembly with correspondent GTF file
+- number of processors: 
+```
+git clone https://github.com/cfarkas/variants2genes.git                                                    # clone repository
+cd variants2genes                                                                                          # enter repository
+conda activate variants2genes                                                                              # activate environment
+./bin/variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20   # execute pipeline
+```
+
+## Example: Collect haplotypes from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired in the pipeline. After installation, inside variants2genes folder execute the following steps:
 
 ```
@@ -87,7 +98,7 @@ hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 samtools sort -o WT.sorted.bam WT.bam -@ 25
 samtools sort -o KO.sorted.bam KO.bam -@ 25
 
-## STEP 4 (optional, but recommended): Use plot--variants to inspect genome-wide variants in every sample (check graph.pdf)
+## STEP 4 (optional, but recommended): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
 ./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
