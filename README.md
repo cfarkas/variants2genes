@@ -73,11 +73,11 @@ cd SALL2_WT_vs_KO
 ### Pipeline Starts ###
 #######################
 
-## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
+## STEP 1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
 ./genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
-## STEP2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
+## STEP 2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
 # WT sample
 prefetch -O ./ SRR8267474 
 fastq-dump --gzip SRR8267474
@@ -103,27 +103,13 @@ From this example, two chr12 and 766 chr14 KO-linked germline variants were disc
 
 ## Employing user-provided genome and/or GTF files:
 
-Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP1 and STEP5. We will run the example using "my_genome.fa" and "my_annotation.gtf" instead of mm10.fa and mm10.gtf as follows:
+Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP 1 and STEP 5. We will run the example using "my_genome.fa" and "my_annotation.gtf" instead of mm10.fa and mm10.gtf as follows:
 
 ```
-## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
+## STEP 1: Build HISAT2 index of my_genome.fa. 
 hisat2-build my_genome.fa my_genome_hisat2
 
-## STEP2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
-# WT sample
-prefetch -O ./ SRR8267474 
-fastq-dump --gzip SRR8267474
-hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
-# KO sample
-prefetch -O ./ SRR8267458 
-fastq-dump --gzip SRR8267458
-hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
-
-## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
-./sortBam WT.bam KO.bam 25
-
-## STEP 4: Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
-./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+## Same STEP 2-4
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ./variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa my_annotation.gtf 20
