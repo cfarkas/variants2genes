@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 genome=${1}
 
 if [ "$1" == "-h" ]; then
@@ -8,7 +10,7 @@ if [ "$1" == "-h" ]; then
   echo ""
   echo "This program will download and index the specified genome from the uscs server (goldenpath) including annotation"
   echo ""
-  echo "[genome]: Name of the genome assembly"
+  echo "[genome]: UCSC Prefix of the genome assembly. Check names here: https://genome.ucsc.edu/cgi-bin/hgGateway"
   echo ""
   exit 0
 fi
@@ -19,7 +21,7 @@ if [ "$1" == "-help" ]; then
   echo ""
   echo "This program will download and index the specified genome from the uscs server (goldenpath) including annotation"
   echo ""
-  echo "[genome]: Name of the genome assembly"
+  echo "[genome]: UCSC Prefix of the genome assembly. Check names here: https://genome.ucsc.edu/cgi-bin/hgGateway"
   echo ""
   exit 0
 fi
@@ -29,7 +31,7 @@ if [ "$1" == "--h" ]; then
   echo ""
   echo "This program will download and index the specified genome from the uscs server (goldenpath) including annotation"
   echo ""
-  echo "[genome]: Name of the genome assembly"
+  echo "[genome]: UCSC Prefix of the genome assembly. Check names here: https://genome.ucsc.edu/cgi-bin/hgGateway"
   echo ""
   exit 0
 fi
@@ -40,7 +42,7 @@ if [ "$1" == "--help" ]; then
   echo ""
   echo "This program will download and index the specified genome from the uscs server (goldenpath) including annotation"
   echo ""
-  echo "[genome]: Name of the genome assembly"
+  echo "[genome]: UCSC Prefix of the genome assembly. Check names here: https://genome.ucsc.edu/cgi-bin/hgGateway"
   echo ""
   exit 0
 fi
@@ -55,6 +57,7 @@ fi
 # Obtaining {genome}.fa genome, and indexing
 wget http://hgdownload.cse.ucsc.edu/goldenpath/${genome}/bigZips/${genome}.2bit
 wget http://hgdownload.soe.ucsc.edu/goldenPath/${genome}/database/refGene.txt.gz
+wget http://hgdownload.soe.ucsc.edu/goldenPath/${genome}/database/ncbiRefSeq.txt.gz
 if [ -f twoBitToFa ]; then
     echo "twoBitToFa script found. Continue:"
     echo ""
@@ -77,6 +80,8 @@ else
 fi
 chmod 755 genePredToGtf
 gunzip refGene.txt.gz
+gunzip ncbiRefSeq.txt.gz
 cut -f 2- refGene.txt | ./genePredToGtf file stdin -source=${genome}_Ref  ${genome}.gtf
+cut -f 2- ncbiRefSeq.txt | ./genePredToGtf file stdin -source=${genome}_Ref  ${genome}_ncbiRefSeq.gtf
 echo ""
-echo "All done. ${genome}.fa and ${genome}.gtf files are located in the current directory"
+echo "All done. ${genome} FASTA and GTF files are located in the current directory"
