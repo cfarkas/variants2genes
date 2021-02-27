@@ -57,12 +57,11 @@ After these steps, a conda enviroment called annotate_my_genomes can be managed 
 After installation, provide:
 - sorted Control and Case bam files (i.e.: WT and KO, respectively)
 - genome assembly with correspondent GTF file
-- number of processors: 
+- number of processors.
+
+Then, execute as follows:
 ```
-git clone https://github.com/cfarkas/variants2genes.git                                                    # clone repository
-cd variants2genes                                                                                          # enter repository
-conda activate variants2genes                                                                              # activate environment
-./bin/variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20   # execute pipeline
+./bin/variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20
 ```
 
 ## Example: Collect haplotypes from RNA-seq data:
