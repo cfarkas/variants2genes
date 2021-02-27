@@ -92,10 +92,8 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ./variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
-
-# All done. Check KO sub-folder with output files.
 ```
-From this example, two chr12 and 766 chr14 KO-linked germline variants were discovered.  
+Check KO sub-folder with output files. From this example, two chr12 and 766 chr14 KO-linked germline variants were discovered.  
 
 ## Employing user-provided genome and/or GTF files:
 
