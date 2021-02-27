@@ -9,7 +9,6 @@ dependencies:             # everything under this, installed by conda
 - samtools
 - bcftools
 - tabix
-- subread
 - sra-tools
 - ncbi-ngs-sdk
 - hisat2
