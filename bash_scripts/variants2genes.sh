@@ -89,17 +89,22 @@ if [ $# -ne 5 ]; then
 fi
 dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
 
+begin=`date +%s`
+#    .---------- constant part!
+#    vvvv vvvv-- the code from above
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
 ### File name definitions
 control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 
 ### Variant Calling
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
 echo ""
-echo "::: The output directory will be the following:"
-echo ${dir1}
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
@@ -113,9 +118,9 @@ echo ""
 echo Time taken: $elapsed
 printf "${CYAN}:::::::::::::::::::::${NC}\n"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Filtering and intersecting VCF files"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 ### Filtering and intersecting VCF files
 echo "==> Filtering with bcftools control and case vcf files..."
@@ -123,27 +128,27 @@ bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > ${case_name}.bcftools.vcf
 echo "Done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Selecting variants in case VCF not present in control VCF:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${ref} --invert > case_variants.vcf
 echo "Done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 30"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
 echo "First filter done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Case VCF file: Filtering with vcflib ---> DP > 8"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
 echo "Second filter done"
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Intersecting case variants in the ranges of control bam file:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > Control.merged.bed
 multiBamCov -bams ${1} -bed Control.merged.bed > control_counts
@@ -158,9 +163,9 @@ rm *bcftools.vcf
 echo ""
 
 ### Performing Somatic Variant Calling with strelka v2.9.2
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Somatic Variant Calling with strelka v2.9.2:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 echo "for documentation, please see: https://github.com/Illumina/strelka"
 echo ""
@@ -173,9 +178,9 @@ bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaSomaticWorkflowDemo.bash
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaGermlineWorkflowDemo.bash
 echo "demo run was succesfull"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Running on control and case samples: Collecting Germline variants:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 # configuration
 begin=`date +%s`
@@ -199,11 +204,11 @@ grep -v "NoPassedVariantGTs" strelka_germline_variants_PASS.vcf > strelka_germli
 cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > strelka_germline_variants.filtered.vcf
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf strelka_germline_variants_PASS2.vcf
 echo ""
-printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
+printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Continue with Somatic Variant Calling"
-printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 # configuration
 begin=`date +%s`
 ./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
@@ -220,9 +225,9 @@ end=`date +%s`
 elapsed=`expr $end - $begin`
 printf "${CYAN}:::::::::::::::::::::${NC}\n"
 echo ""
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::\n"
-echo "Filtering Germline and Somatic variants"
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Filtering Germline and Somatic variants"
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 cp ./strelka_somatic/results/variants/somatic.snvs.vcf.gz ./strelka_somatic_variants.vcf.gz
 bgzip -d strelka_somatic_variants.vcf.gz
 grep "#" strelka_somatic_variants.vcf > strelka_somatic_variants_header.vcf
@@ -239,9 +244,9 @@ echo ""
 echo "Done"
 echo ""
 # Filtering Case.filtered.vcf variants file with strelka outputs
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Filtering Case.filtered.vcf variants file with strelka outputs..."
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 cat strelka_somatic_indels.filtered.vcf strelka_somatic_variants.filtered.vcf > strelka_all_somatic.vcf
 grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
@@ -254,9 +259,9 @@ echo "Done"
 
 ### Annotating variants and obtaining gene list
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::\n"
 echo "==> Annotating variants"
-printf "${YELLOW}:::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::${NC}\n"
 bedtools intersect -a ${GTF} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
