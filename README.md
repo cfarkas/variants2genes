@@ -61,12 +61,6 @@ After these steps, a conda enviroment called annotate_my_genomes can be managed 
 # Inside variants2genes folder
 mkdir SALL2_WT_vs_KO
 
-# Copying all binaries to SALL2_WT_vs_KO
-cp ./bin/* ./SALL2_WT_vs_KO/
-
-# Copying relevant R script to SALL2_WT_vs_KO
-cp ./R_scripts/bam_coverage_mouse.R ./SALL2_WT_vs_KO/
-
 cd SALL2_WT_vs_KO
 
 #######################
@@ -93,8 +87,8 @@ hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 samtools sort -o WT.sorted.bam WT.bam -@ 25
 samtools sort -o KO.sorted.bam KO.bam -@ 25
 
-## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
-./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+## STEP 4 (optional, but recommended): Use plot--variants to inspect genome-wide variants in every sample (check graph.pdf)
+./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ./variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
