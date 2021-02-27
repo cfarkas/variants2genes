@@ -78,10 +78,12 @@ cd SALL2_WT_vs_KO
 hisat2-build mm10.fa mm10_hisat2
 
 ## STEP 2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
+
 # WT sample
 prefetch -O ./ SRR8267474 
 fastq-dump --gzip SRR8267474
 hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
+
 # KO sample
 prefetch -O ./ SRR8267458 
 fastq-dump --gzip SRR8267458
