@@ -79,7 +79,7 @@ cd SALL2_WT_vs_KO
 #######################
 
 ## STEP 1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
-./genome-download mm10
+../bin/genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
 ## STEP 2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
@@ -99,10 +99,10 @@ samtools sort -o WT.sorted.bam WT.bam -@ 25
 samtools sort -o KO.sorted.bam KO.bam -@ 25
 
 ## STEP 4 (optional, but recommended): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
-./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
+../bin/plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-./variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
+../bin/variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
 ```
 Check KO sub-folder with output files. From this example, two chr12 and 766 chr14 KO-linked germline variants were discovered.  
 
