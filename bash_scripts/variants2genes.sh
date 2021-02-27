@@ -94,12 +94,12 @@ control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 
 ### Variant Calling
-echo "................................................................................."
-echo ""
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
 echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
@@ -107,13 +107,16 @@ bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
+printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
-echo "................................................................................."
+echo ""
 echo Time taken: $elapsed
+printf "${CYAN}:::::::::::::::::::::${NC}\n"
 echo ""
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::\n"
 echo "Filtering and intersecting VCF files..."
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-
 ### Filtering and intersecting VCF files
 echo "==> Filtering with bcftools control and case vcf files..."
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_name}.vcf > Control_initial_filter.vcf
@@ -147,7 +150,9 @@ rm *bcftools.vcf
 echo ""
 
 ### Performing Somatic Variant Calling with strelka v2.9.2
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Somatic Variant Calling with strelka v2.9.2:"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 echo "for documentation, please see: https://github.com/Illumina/strelka"
 echo ""
@@ -160,7 +165,9 @@ bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaSomaticWorkflowDemo.bash
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaGermlineWorkflowDemo.bash
 echo "demo run was succesfull"
 echo ""
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Running on control and case samples: Collecting Germline variants:"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 # configuration
 begin=`date +%s`
@@ -171,10 +178,11 @@ begin=`date +%s`
     --runDir strelka_germline
 # execution on a single local machine with n parallel jobs
 strelka_germline/runWorkflow.py -m local -j ${5}
+printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
 end=`date +%s`
 elapsed=`expr $end - $begin`
-echo "................................................................................."
+printf "${CYAN}:::::::::::::::::::::${NC}\n"
 cp ./strelka_germline/results/variants/variants.vcf.gz ./strelka_germline_variants.vcf.gz
 bgzip -d strelka_germline_variants.vcf.gz
 grep "#" strelka_germline_variants.vcf > strelka_germline_variants_header.vcf
@@ -182,9 +190,12 @@ grep "PASS" strelka_germline_variants.vcf > strelka_germline_variants_PASS.vcf
 grep -v "NoPassedVariantGTs" strelka_germline_variants_PASS.vcf > strelka_germline_variants_PASS2.vcf
 cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > strelka_germline_variants.filtered.vcf
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf strelka_germline_variants_PASS2.vcf
+echo ""
+printf "${GREY}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
 echo "==> Continue with Somatic Variant Calling"
+printf "${GREY}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 # configuration
 begin=`date +%s`
 ./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
@@ -194,10 +205,13 @@ begin=`date +%s`
     --runDir strelka_somatic
 # execution on a single local machine with n parallel jobs
 strelka_somatic/runWorkflow.py -m local -j ${5}
+echo ""
+printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
 end=`date +%s`
 elapsed=`expr $end - $begin`
-echo "................................................................................."
+printf "${CYAN}:::::::::::::::::::::${NC}\n"
+echo ""
 cp ./strelka_somatic/results/variants/somatic.snvs.vcf.gz ./strelka_somatic_variants.vcf.gz
 bgzip -d strelka_somatic_variants.vcf.gz
 grep "#" strelka_somatic_variants.vcf > strelka_somatic_variants_header.vcf
@@ -211,10 +225,10 @@ grep "#" strelka_somatic_indels.vcf > strelka_somatic_indels_header.vcf
 grep "PASS" strelka_somatic_indels.vcf > strelka_somatic_indels_PASS.vcf
 cat strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf > strelka_somatic_indels.filtered.vcf
 rm strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf
-echo ""
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "Filtered Germline and Somatic variants are located in working directory"
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-
 # Filtering Case.filtered.vcf variants file with strelka outputs
 echo "==> Filtering Case.filtered.vcf variants file with strelka outputs..."
 cat strelka_somatic_indels.filtered.vcf strelka_somatic_variants.filtered.vcf > strelka_all_somatic.vcf
@@ -229,7 +243,9 @@ echo "Done"
 
 ### Annotating variants and obtaining gene list
 echo ""
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Annotating variants and the associated gene list"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 bedtools intersect -a ${GTF} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
@@ -238,48 +254,32 @@ sed -i 's/gene_id //g' gene_id_identifiers.tab
 sed -i 's/";//g' gene_id_identifiers.tab
 sed -i 's/"//g' gene_id_identifiers.tab  
 mv gene_id_identifiers.tab genes_with_variants.tabular
-echo "done"
-
-### Obtaining gene counts in both samples
-echo ""
-echo "==> Obtaining gene counts in both samples"
-featureCounts -a ${GTF} -o gene_counts.tabular -T ${threads} ${1} ${2}
-cat gene_counts.tabular | awk '{print $1"\t"$7"\t"$8}' > count_table.tabular
-rm gene_counts.tabular gene_counts.tabular.summary
-echo "Done. count_table.tabular file contains the gene quantification across bam files"
-echo ""
-echo "Adding gene count detection to the list of genes with variants"
-join <(sort genes_with_variants.tabular) <(sort count_table.tabular) > ${case_name}_quantification.tabular
-echo ""
 
 ### Output files
-echo "All done. ${case_name}_quantification.tabular contains the list of genes with case associated-variants plus gene expression quantification in both samples"
+echo "All done"
 echo ""
 mkdir ${case_name}
 rm Case.filtered.vcf
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf count_table.tabular ${case_name}_quantification.tabular *.filtered.vcf ./${case_name}
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *.filtered.vcf ./${case_name}
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./${case_name} folder"
 echo ""
 echo "(1) Case.filtered.strelka.gtf"     
 echo "(2) Case.filtered.strelka.vcf"    
 echo "(3) genes_with_variants.tabular"
-echo "(4) count_table.tabular"
-echo "(5) ${case_name}_quantification.tabular"
-echo "(6) strelka_germline_variants.filtered.vcf"
-echo "(7) strelka_somatic_variants.filtered.vcf"
-echo "(8) strelka_somatic_indels.filtered.vcf"
+echo "(4) strelka_germline_variants.filtered.vcf"
+echo "(5) strelka_somatic_variants.filtered.vcf"
+echo "(6) strelka_somatic_indels.filtered.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
 echo "(1): Case associated variants in GTF format"
 echo "(2): Case-associated variants in VCF format"
 echo "(3): List of genes with variants in tabular format"
-echo "(4): Count table (gene_id) of Control and Case bam files"
-echo "(5): List of genes with variants plus gene quantification in Control and Case bam files, respectively"
-echo "(6): Strelka germline variants"
-echo "(7): Strelka somatic variants associated with case bam file"
-echo "(8): Strelka somatic indels associated with case bam file"
-echo "....................................................................................................."
+echo "(4): Strelka germline variants"
+echo "(5): Strelka somatic variants associated with case bam file"
+echo "(6): Strelka somatic indels associated with case bam file"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 #
 } | tee logfile
