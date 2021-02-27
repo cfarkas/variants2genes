@@ -66,7 +66,7 @@ variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /p
 Otherwise, provide full path to this binary, located in ```variants2genes/bin/``` 
 
 ## Example: Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired in the pipeline. After installation, inside variants2genes folder execute the following steps:
+- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired when naming bam files. After installation, inside variants2genes folder from scratch:
 
 ```
 # Inside variants2genes folder
@@ -117,7 +117,7 @@ hisat2-build my_genome.fa my_genome_hisat2
 ## Same STEP 2-4
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-./variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa my_annotation.gtf 20
+../bin/variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa my_annotation.gtf 20
 ```
 
 ### Notes
