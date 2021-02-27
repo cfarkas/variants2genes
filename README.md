@@ -55,7 +55,7 @@ After these steps, a conda enviroment called annotate_my_genomes can be managed 
 # Usage:
 
 After installation, provide:
-- sorted Control and Case bam files (i.e.: WT and KO, respectively)
+- sorted and indexed Control and Case bam files (i.e.: WT and KO, respectively)
 - genome assembly with correspondent GTF file
 - number of processors.
 
@@ -94,9 +94,9 @@ prefetch -O ./ SRR8267458
 fastq-dump --gzip SRR8267458
 hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 
-## STEP 3: sort bam samples using 25 threads
-samtools sort -o WT.sorted.bam WT.bam -@ 25
-samtools sort -o KO.sorted.bam KO.bam -@ 25
+## STEP 3: sort and index bam samples using 25 threads
+samtools sort -o WT.sorted.bam WT.bam -@ 25 && samtools index WT.sorted.bam -@ 25
+samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 25
 
 ## STEP 4 (optional, but recommended): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
 ../bin/plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
