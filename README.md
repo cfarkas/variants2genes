@@ -55,7 +55,7 @@ After these steps, a conda enviroment called annotate_my_genomes can be managed 
 
 # Usage:
 ## Collect haplotypes from RNA-seq data:
-- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). It is important to denominate every bam file with a name without points in the middle (e.g.: WT.bam vs KO.bam or Control.bam vs Case.bam and NOT Control.1.bam) since the pipeline will fail with complex names and points in it. After installation, inside variants2genes folder execute the following steps:
+- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired in the pipeline. After installation, inside variants2genes folder execute the following steps:
 
 ```
 # Inside variants2genes folder
@@ -77,17 +77,22 @@ cd SALL2_WT_vs_KO
 ./genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
-## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads. Give to bam files simple names (WT.bam and KO.bam) 
-
-hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
-hisat2 -x mm10_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
+## STEP2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
+# WT sample
+prefetch -O ./ SRR8267474 
+fastq-dump --gzip SRR8267474
+hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
+# KO sample
+prefetch -O ./ SRR8267458 
+fastq-dump --gzip SRR8267458
+hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 
 ## STEP 3: sort bam samples using 25 threads
 samtools sort -o WT.sorted.bam WT.bam -@ 25
 samtools sort -o KO.sorted.bam KO.bam -@ 25
 
 ## STEP 4 (optional, but recommended): Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
-./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ./variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
@@ -98,25 +103,30 @@ From this example, two chr12 and 766 chr14 KO-linked germline variants were disc
 
 ## Employing user-provided genome and/or GTF files:
 
-Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP1 and STEP5. We will run the example using "my_genome.fa" and "final_annotated.gtf" instead of mm10.fa and mm10.gtf as follows:
+Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP1 and STEP5. We will run the example using "my_genome.fa" and "my_annotation.gtf" instead of mm10.fa and mm10.gtf as follows:
 
 ```
 ## STEP1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
 hisat2-build my_genome.fa my_genome_hisat2
 
-## STEP2: Align SALL2 Wild type and Knockout reads using SRA accessions. Give to bam files simple names (WT.bam and KO.bam) 
-
-hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267474,SRR8267475,SRR8267476,SRR8267477 | samtools view -bSh > WT.bam
-hisat2 -x my_genome_hisat2 -p 25 --sra-acc SRR8267458,SRR8267459,SRR8267460,SRR8267461 | samtools view -bSh > KO.bam
+## STEP2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
+# WT sample
+prefetch -O ./ SRR8267474 
+fastq-dump --gzip SRR8267474
+hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
+# KO sample
+prefetch -O ./ SRR8267458 
+fastq-dump --gzip SRR8267458
+hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 
 ## STEP 3: Use sort_bam.sh script to sort bam samples using 40 threads
 ./sortBam WT.bam KO.bam 25
 
 ## STEP 4: Use plotVariants to inspect genome-wide variants in every sample (check graph.pdf)
-./plotVariants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
+./plot-variants WT.sorted.bam KO.sorted.bam mm10.fa bam_coverage_mouse.R 
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-./variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa final_annotated.gtf 20
+./variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa my_annotation.gtf 20
 ```
 
 ### Notes
