@@ -59,10 +59,11 @@ After installation, provide:
 - genome assembly with correspondent GTF file
 - number of processors.
 
-Then, execute as follows:
+Then, if variants2genes binary is copied in /usr/local/bin/, execute as follows:
 ```
-./bin/variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20
+variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20
 ```
+Otherwise, provide full path to this binary, located inside /bin/ into the repository.  
 
 ## Example: Collect haplotypes from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired in the pipeline. After installation, inside variants2genes folder execute the following steps:
