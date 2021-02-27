@@ -96,7 +96,7 @@ case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 ### Variant Calling
 echo "................................................................................."
 echo ""
-echo "Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
+echo "==> Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
 echo ""
 echo "The output directory will be the following:"
 echo ${dir1}
@@ -115,24 +115,24 @@ echo "Filtering and intersecting VCF files..."
 echo ""
 
 ### Filtering and intersecting VCF files
-echo "Filtering with bcftools control and case vcf files..."
+echo "==> Filtering with bcftools control and case vcf files..."
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_name}.vcf > Control_initial_filter.vcf
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > ${case_name}.bcftools.vcf
 echo "Done"
 echo ""
-echo "Selecting variants in case VCF not present in control VCF:"
+echo "==> Selecting variants in case VCF not present in control VCF:"
 vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${ref} --invert > case_variants.vcf
 echo "Done"
 echo ""
-echo "Case VCF file: Filtering with vcflib ---> QUAL > 30"
+echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 30"
 vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
 echo "First filter done"
 echo ""
-echo "Case VCF file: Filtering with vcflib ---> DP > 8"
+echo "==> Case VCF file: Filtering with vcflib ---> DP > 8"
 vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
 echo "Second filter done"
 echo ""
-echo "Intersecting case variants in the ranges of control bam file:"
+echo "==> Intersecting case variants in the ranges of control bam file:"
 bamToBed -i ${1} > Control.bed
 mergeBed -i Control.bed > Control.merged.bed
 multiBamCov -bams ${1} -bed Control.merged.bed > control_counts
@@ -147,7 +147,7 @@ rm *bcftools.vcf
 echo ""
 
 ### Performing Somatic Variant Calling with strelka v2.9.2
-echo "Performing Somatic Variant Calling with strelka v2.9.2:"
+echo "==> Performing Somatic Variant Calling with strelka v2.9.2:"
 echo ""
 echo "for documentation, please see: https://github.com/Illumina/strelka"
 echo ""
@@ -155,12 +155,12 @@ echo "downloading strelka binary from github repository"
 wget https://github.com/Illumina/strelka/releases/download/v2.9.2/strelka-2.9.2.centos6_x86_64.tar.bz2
 tar xvjf strelka-2.9.2.centos6_x86_64.tar.bz2
 echo ""
-echo "run demo to check successful installation"
+echo "==> run demo to check successful installation"
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaSomaticWorkflowDemo.bash
 bash strelka-2.9.2.centos6_x86_64/bin/runStrelkaGermlineWorkflowDemo.bash
 echo "demo run was succesfull"
 echo ""
-echo "Running on control and case samples: Collecting Germline variants:"
+echo "==> Running on control and case samples: Collecting Germline variants:"
 echo ""
 # configuration
 begin=`date +%s`
@@ -184,7 +184,7 @@ cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > s
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf strelka_germline_variants_PASS2.vcf
 echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
-echo "Continue with Somatic Variant Calling"
+echo "==> Continue with Somatic Variant Calling"
 # configuration
 begin=`date +%s`
 ./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
@@ -216,7 +216,7 @@ echo "Filtered Germline and Somatic variants are located in working directory"
 echo ""
 
 # Filtering Case.filtered.vcf variants file with strelka outputs
-echo "Filtering Case.filtered.vcf variants file with strelka outputs..."
+echo "==> Filtering Case.filtered.vcf variants file with strelka outputs..."
 cat strelka_somatic_indels.filtered.vcf strelka_somatic_variants.filtered.vcf > strelka_all_somatic.vcf
 grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
@@ -229,7 +229,7 @@ echo "Done"
 
 ### Annotating variants and obtaining gene list
 echo ""
-echo "Annotating variants and the associated gene list"
+echo "==> Annotating variants and the associated gene list"
 bedtools intersect -a ${GTF} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
@@ -242,7 +242,7 @@ echo "done"
 
 ### Obtaining gene counts in both samples
 echo ""
-echo "Obtaining gene counts in both samples"
+echo "==> Obtaining gene counts in both samples"
 featureCounts -a ${GTF} -o gene_counts.tabular -T ${threads} ${1} ${2}
 cat gene_counts.tabular | awk '{print $1"\t"$7"\t"$8}' > count_table.tabular
 rm gene_counts.tabular gene_counts.tabular.summary
