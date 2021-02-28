@@ -98,13 +98,14 @@ NC='\033[0m' # No Color
 control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 ### Variant Calling
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
+echo ""
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
