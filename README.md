@@ -1,5 +1,5 @@
 # variants2genes
-Obtaining case-linked variants and correspondent genes (from control/case experiments) in BASH/R enviroment
+Obtaining case-linked variants and correspondent genes (from control/case experiments)
 
 ![github_variants2genes](https://user-images.githubusercontent.com/7016350/77459123-d7d06d80-6dc4-11ea-8d21-54a6e7ca9c4b.png)
 
