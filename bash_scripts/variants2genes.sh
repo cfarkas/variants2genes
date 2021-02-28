@@ -94,6 +94,9 @@ begin=`date +%s`
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
+echo "Cleaning directory..."
+rm -rf strelka*
+echo ""
 ### File name definitions
 control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
