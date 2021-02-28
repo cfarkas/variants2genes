@@ -273,7 +273,7 @@ echo ""
 mkdir ${case_name}
 rm Case.filtered.vcf
 mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *.filtered.vcf ./${case_name}
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./${case_name} folder"
 echo ""
 echo "(1) Case.filtered.strelka.gtf"     
@@ -291,7 +291,7 @@ echo "(3): List of genes with variants in tabular format"
 echo "(4): Strelka germline variants"
 echo "(5): Strelka somatic variants associated with case bam file"
 echo "(6): Strelka somatic indels associated with case bam file"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 #
 } | tee logfile
