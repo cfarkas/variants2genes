@@ -88,23 +88,20 @@ if [ $# -ne 5 ]; then
   exit 3
 fi
 dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
-
 begin=`date +%s`
 #    .---------- constant part!
 #    vvvv vvvv-- the code from above
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
-
 ### File name definitions
 control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
-
 ### Variant Calling
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
-echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
 begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
@@ -161,7 +158,6 @@ rm case_variants*
 rm Control_initial_filter.vcf
 rm *bcftools.vcf
 echo ""
-
 ### Performing Somatic Variant Calling with strelka v2.9.2
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Somatic Variant Calling with strelka v2.9.2:"
@@ -256,7 +252,6 @@ vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${re
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf strelka_somatic.vcf
 echo "Done"
-
 ### Annotating variants and obtaining gene list
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::\n"
