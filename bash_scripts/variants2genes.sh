@@ -274,7 +274,7 @@ echo "All done"
 echo ""
 mkdir ${case_name}
 rm Case.filtered.vcf
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *.filtered.vcf ./${case_name}
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *filtered.vcf ./${case_name}
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./${case_name} folder"
 echo ""
