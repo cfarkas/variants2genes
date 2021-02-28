@@ -252,6 +252,8 @@ rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
 vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.st.vcf
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf strelka_somatic.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${ref} --invert > somatic-filtered.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${ref} --invert > indels-filtered.vcf
 echo "Done"
 ### Annotating variants and obtaining gene list
 echo ""
@@ -282,6 +284,8 @@ echo "(3) genes_with_variants.tabular"
 echo "(4) strelka_germline_variants.filtered.vcf"
 echo "(5) strelka_somatic_variants.filtered.vcf"
 echo "(6) strelka_somatic_indels.filtered.vcf"
+echo "(7) somatic-filtered.vcf" 
+echo "(8) indels-filtered.vcf" 
 echo ""
 echo "Corresponding to:"
 echo ""
@@ -291,6 +295,8 @@ echo "(3): List of genes with variants in tabular format"
 echo "(4): Strelka germline variants"
 echo "(5): Strelka somatic variants associated with case bam file"
 echo "(6): Strelka somatic indels associated with case bam file"
+echo "(7): Filtered somatic variants associated with case bam file"
+echo "(8): Filtered indels variants associated with case bam file"
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 #
