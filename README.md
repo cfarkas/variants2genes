@@ -37,7 +37,7 @@ bash makefile                                                  # make  & install
 ```
 sudo cp ./bin/* /usr/local/bin/
 ```
-After these steps, a conda enviroment called annotate_my_genomes can be managed as follows:
+After these steps, a conda enviroment called variants2genes can be managed as follows:
 ```
 # To activate this environment, use
 #
