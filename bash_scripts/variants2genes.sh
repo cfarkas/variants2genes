@@ -14,7 +14,7 @@ if [ "$1" == "-h" ]; then
   echo ""
   echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
   echo ""
-  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
+  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
   echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
   echo ""
@@ -30,9 +30,9 @@ fi
 
 if [ "$1" == "-help" ]; then
   echo ""
-  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
   echo ""
-  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
+  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
   echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
   echo ""
@@ -47,9 +47,9 @@ if [ "$1" == "-help" ]; then
 fi
 if [ "$1" == "--h" ]; then
   echo ""
-  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
   echo ""
-  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
+  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
   echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
   echo ""
@@ -65,9 +65,9 @@ fi
 
 if [ "$1" == "--help" ]; then
   echo ""
-  echo "Usage: ./`basename $0` {Control Bam File} {Case Bam File} {Reference} {GTF} {Threads}"
+  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
   echo ""
-  echo "This program will call variants using SAMtools/bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
+  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
   echo ""
   echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
   echo ""
