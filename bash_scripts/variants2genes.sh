@@ -101,16 +101,17 @@ echo ""
 control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
 case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
 ### Variant Calling
+if [ ! -f ${1}.bai ]; then
+    echo " ${1}.bai file not found!. Did you forget to sort and index bam files?"
+    exit 1
+fi
+if [ ! -f ${2}.bai ]; then
+    echo " ${2}.bai file not found!. Did you forget to sort and index bam files?"
+    exit 1
+fi
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
-
-if [ ! -f ${1}.bai ]; then
-    echo " ${1}.bai file not found!. Sort and index bam files prior to input them in the pipeline"
-fi
-if [ ! -f ${2}.bai ]; then
-    echo " ${2}.bai file not found!. Sort and index bam files prior to input them in the pipeline"
-fi
 echo ""
 begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
