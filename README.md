@@ -98,7 +98,7 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 2
 ## STEP 4 (optional): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
 ../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
 
-## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
+## STEP 5: Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -t 20
 ```
 Check KO sub-folder with output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
