@@ -5,9 +5,9 @@ Obtaining case-linked variants and correspondent genes (from control/case experi
 
 ## Pipeline Outline
 
-variants2genes are a set of bash scripts that address (based on several well-known genomic tools) case associated variants (with correspondent genes) 
+variants2genes is a pipeline that address (based on several well-known genomic tools) case associated variants (with correspondent genes) 
 between two matched samples from RNA-seq/WES/WGS data. The pipeline generates genome-wide plots of coverage between the two samples as initial inspection, and detect alleles present in the case sample (but not substantially present in the control) by calling variants and intersecting the correspondent genes using intersecting the output from bcftools and strelka somatic variant calling: https://github.com/Illumina/strelka. This resource could be useful in the Normal/Tumor comparison analysis, haplotype analysis, characterization of substrains, among other scenarios.
-The pipeline is implemented in the BASH/R enviroment and is available for several organism models such as Human, Mouse, Rat and Chicken.
+The pipeline requieres BASH and R enviroment and is available for several organism models such as Human, Mouse, Rat and Chicken.
 
 Pipeline Outline:
 
