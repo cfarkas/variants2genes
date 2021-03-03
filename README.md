@@ -61,7 +61,7 @@ After installation, provide:
 
 Then, if variants2genes binary is copied in /usr/local/bin/, execute as follows:
 ```
-variants2genes /path/to/WT.sorted.bam /path/to/KO.sorted.bam /path/to/mm10.fa /path/to/mm10.gtf 20
+variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -t 20
 ```
 Otherwise, provide full path to this binary, located in ```variants2genes/bin/``` 
 
@@ -102,7 +102,7 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 2
 ../bin/plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-../bin/variants2genes WT.sorted.bam KO.sorted.bam mm10.fa mm10.gtf 20
+../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -t 20
 ```
 Check KO sub-folder with output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
 
@@ -117,7 +117,7 @@ hisat2-build my_genome.fa my_genome_hisat2
 ## Same STEP 2-4
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-../bin/variants2genes WT.sorted.bam KO.sorted.bam my_genome.fa my_annotation.gtf 20
+../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g my_genome.fa -r my_annotation.gtf -t 20
 ```
 
 ### Notes
