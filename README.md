@@ -54,7 +54,7 @@ After these steps, a conda enviroment called variants2genes can be managed as fo
 
 # Usage:
 
-Check binaries in ```variants2genes/bin/```. The pipeline will requiere:
+Check binaries in ```variants2genes/bin/```. ```variants2genes``` pipeline will requiere:
 ```
     -a  File or path to Control bam file (sorted and indexed)
     -b  File or path to Case bam file (sorted and indexed)
