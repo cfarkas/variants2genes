@@ -99,7 +99,7 @@ samtools sort -o WT.sorted.bam WT.bam -@ 25 && samtools index WT.sorted.bam -@ 2
 samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 25
 
 ## STEP 4 (optional, but recommended): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
-../bin/plot-variants WT.sorted.bam KO.sorted.bam mm10.fa ../R_scripts/bam_coverage_mouse.R
+../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 ../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -t 20
