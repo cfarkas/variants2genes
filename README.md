@@ -55,10 +55,13 @@ After these steps, a conda enviroment called variants2genes can be managed as fo
 # Usage:
 
 After installation, provide:
-- sorted and indexed Control and Case bam files (i.e.: WT and KO, respectively)
-- genome assembly with correspondent GTF file
-- number of processors.
-
+```
+    -a  File or path to Control bam file (sorted and indexed)
+    -b  File or path to Case bam file (sorted and indexed)
+    -g  Reference genome (in fasta format)
+    -r  Gene annotation (in GTF format)
+    -t  Number of threads for processing (integer)
+```
 Then, if variants2genes binary is copied in /usr/local/bin/, execute as follows:
 ```
 variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -t 20
