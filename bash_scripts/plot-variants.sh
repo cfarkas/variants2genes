@@ -2,99 +2,66 @@
 
 set -e 
 
-control=${1}
-case=${2}
-ref=${3}
-Rscript_path=${4}
+usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-p <path/to/Bam_Coverage.R>]
+This program will invoke an R script to plot filtered variants from Control and Case bam files, for genome-wide inspection.
+Arguments:
+    -h  show this help text
+    -a  File or path to Control bam file (sorted and indexed)
+    -b  File or path to Case bam file (sorted and indexed)
+    -g  Reference genome (in fasta format)
+    -p  path/to/bam_coverage.R. Check varianst2genes/scripts/bam_coverage.R"
+options=':ha:b:g:p:'
+while getopts $options option; do
+  case "$option" in
+    h) echo "$usage"; exit;;
+    a) a=$OPTARG;;
+    b) b=$OPTARG;;
+    g) g=$OPTARG;;
+    p) p=$OPTARG;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2; echo "$usage" >&2; exit 1;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2; echo "$usage" >&2; exit 1;;
+  esac
+done
 
-if [ "$1" == "-h" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [path/to/Bam_Coverage.R]"
-  echo ""
-  echo "This program will invoke an R script to plot germline and somatic variants from Control and Case bam files"
-  echo ""
-  echo "[Control Bam File]: Path to control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File] [Reference]: Path to case bam file (sorted and indexed)"
-  echo ""
-  echo "[path/to/bam_coverage.R]: path/to/bam_coverage.R, check ../scripts/bam_coverage.R"
-  exit 0
+# mandatory arguments
+if [ ! "$a" ] || [ ! "$b" ] || [ ! "$g" ] || [ ! "$p" ]; then
+  echo "arguments -a, -b, -g and -p must be provided"
+  echo "$usage" >&2; exit 1
 fi
 
-if [ "$1" == "--h" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [path/to/Bam_Coverage.R]"
-  echo ""
-  echo "This program will invoke an R script to plot germline and somatic variants from Control and Case bam files"
-  echo ""
-  echo "[Control Bam File]: Path to control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File] [Reference]: Path to case bam file (sorted and indexed)"
-  echo ""
-  echo "[path/to/bam_coverage.R]: path/to/bam_coverage.R, check ../scripts/bam_coverage.R"
-  exit 0
-fi
-
-if [ "$1" == "-help" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [path/to/Bam_Coverage.R]"
-  echo ""
-  echo "This program will invoke an R script to plot germline and somatic variants from Control and Case bam files"
-  echo ""
-  echo "[Control Bam File]: Path to control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File] [Reference]: Path to case bam file (sorted and indexed)"
-  echo ""
-  echo "[path/to/bam_coverage.R]: path/to/bam_coverage.R, check ../scripts/bam_coverage.R"
-  exit 0
-fi
-
-if [ "$1" == "--help" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [path/to/Bam_Coverage.R]"
-  echo ""
-  echo "This program will invoke an R script to plot germline and somatic variants from Control and Case bam files"
-  echo ""
-  echo "[Control Bam File]: Path to control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File] [Reference]: Path to case bam file (sorted and indexed)"
-  echo ""
-  echo "[path/to/bam_coverage.R]: path/to/bam_coverage.R, check ../scripts/bam_coverage.R"
-  exit 0
-fi
-
-[ $# -eq 0 ] && { echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [path/to/bam_coverage.R]"; exit 1; }
-
-if [ $# -ne 4 ]; then
-  echo 1>&2 "Usage: ./`basename $0`  [Control Bam File] [Case Bam File] [Reference] [path/to/bam_coverage.R]"
-  exit 3
-fi
 dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
-#
+
+#    .---------- constant part!
+#    vvvv vvvv-- the code from above
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
 ### File name definitions
-control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
-case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
-#
+control_name=$(echo "${a}" | awk -F'[.]' '{print $1}')
+case_name=$(echo "${b}" | awk -F'[.]' '{print $1}')
+
 ### Variant Calling
-echo "................................................................................."
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-echo "Performing Variant Calling with SAMtools and bcftools (see: http://samtools.github.io/bcftools/):"
-echo ""
-echo "The output directory will be the following:"
-echo ${dir1}
 begin=`date +%s`
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads 1 -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g} --threads 1 -Ou ${a}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads 1 -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g} --threads 1 -Ou ${b}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
+printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
-echo "................................................................................."
-echo Time taken: $elapsed
 echo ""
-### Filtering and intersecting VCF files
+echo Time taken: $elapsed
+printf "${CYAN}:::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "Filtering with bcftools control and case vcf files..."
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${control_name}.vcf > Controlv.vcf
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_name}.vcf > Casev.vcf
@@ -105,8 +72,10 @@ echo "Generating plot from Control and Case variants across chromosomes..."
 echo ""
 echo "Outputting graph in: ${dir1}"
 echo ""
-Rscript ${4}
+Rscript ${p}
 rm ${control_name}.vcf ${case_name}.vcf Controlv.vcf Casev.vcf
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo ""
 echo "All Done. Check graph.pdf plot to explore variants from Control and Case bam files"
 echo ""
+printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
