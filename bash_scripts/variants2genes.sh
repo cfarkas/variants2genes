@@ -1,112 +1,59 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 {
 
-control=${1}
-case=${2}
-ref=${3}
-GTF=${4}
-threads=${5}
+usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-r <genome.gtf>] [-t <threads>]
+This program will call variants using bcftools in Control and Case bam files to obtain case-linked variants and will filter these variants by using BEDtools and Strelka somatic variant caller.
+Arguments:
+    -h  show this help text
+    -a  File or path to Control bam file (sorted and indexed)
+    -b  File or path to Case bam file (sorted and indexed)
+    -g  Reference genome (in fasta format)
+    -r  Gene annotation (in GTF format)
+    -t  Number of threads for processing (integer)"
+options=':ha:b:g:r:t:'
+while getopts $options option; do
+  case "$option" in
+    h) echo "$usage"; exit;;
+    a) a=$OPTARG;;
+    b) b=$OPTARG;;
+    g) g=$OPTARG;;
+    r) r=$OPTARG;;
+    t) t=$OPTARG;;
+    :) printf "missing argument for -%s\n" "$OPTARG" >&2; echo "$usage" >&2; exit 1;;
+   \?) printf "illegal option: -%s\n" "$OPTARG" >&2; echo "$usage" >&2; exit 1;;
+  esac
+done
 
-if [ "$1" == "-h" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
-  echo ""
-  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
-  echo ""
-  echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File]: File of path to Case bam file (sorted and indexed)"
-  echo ""
-  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
-  echo ""
-  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
-  echo ""
-  echo "[Threads]: Number of CPUs for the task (integer)"
-  exit 0
+# mandatory arguments
+if [ ! "$a" ] || [ ! "$b" ] || [ ! "$g" ] || [ ! "$r" ] || [ ! "$t" ]; then
+  echo "arguments -a, -b, -g, -r and -t must be provided"
+  echo "$usage" >&2; exit 1
 fi
 
-if [ "$1" == "-help" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
-  echo ""
-  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
-  echo ""
-  echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File]: File of path to Case bam file (sorted and indexed)"
-  echo ""
-  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
-  echo ""
-  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
-  echo ""
-  echo "[Threads]: Number of CPUs for the task (integer)"
-  exit 0
-fi
-if [ "$1" == "--h" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
-  echo ""
-  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
-  echo ""
-  echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File]: File of path to Case bam file (sorted and indexed)"
-  echo ""
-  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
-  echo ""
-  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
-  echo ""
-  echo "[Threads]: Number of CPUs for the task (integer)"
-  exit 0
-fi
-
-if [ "$1" == "--help" ]; then
-  echo ""
-  echo "Usage: ./`basename $0` [Control Bam File] [Case Bam File] [Reference] [GTF] [Threads]"
-  echo ""
-  echo "This program will call variants using bcftools in Control and Case bam files to obtain case-ligated variants and will filter these variants by using BEDtools and Strelka somatic variant caller."
-  echo ""
-  echo "[Control Bam File]: File of path to Control bam file (sorted and indexed)"
-  echo ""
-  echo "[Case Bam File]: File of path to Case bam file (sorted and indexed)"
-  echo ""
-  echo "[Reference]: PATH where the reference genome (in fasta format) is located. If the genome is located in the working folder, just specify the name."
-  echo ""
-  echo "[GTF]: PATH where the gene annotation (in GTF format) is located. If the GTF file is located in the working folder, just specify the name."
-  echo ""
-  echo "[Threads]: Number of CPUs for the task (integer)"
-  exit 0
-fi
-
-[ $# -eq 0 ] && { echo "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Reference] [GTF] [Threads]"; exit 1; }
-
-if [ $# -ne 5 ]; then
-  echo 1>&2 "Usage: ./`basename $0` [Control Bam file] [Case Bam file] [Reference] [GTF] [Threads]"
-  exit 3
-fi
-dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
-begin=`date +%s`
 #    .---------- constant part!
 #    vvvv vvvv-- the code from above
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
+
+dir1=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+begin=`date +%s`
 echo "Cleaning directory..."
 rm -rf strelka*
 echo ""
 ### File name definitions
-control_name=$(echo "${1}" | awk -F'[.]' '{print $1}')
-case_name=$(echo "${2}" | awk -F'[.]' '{print $1}')
+control_name=$(echo "${a}" | awk -F'[.]' '{print $1}')
+case_name=$(echo "${b}" | awk -F'[.]' '{print $1}')
 ### Variant Calling
-if [ ! -f ${1}.bai ]; then
-    echo " ${1}.bai file not found!. Did you forget to sort and index bam files?"
+if [ ! -f ${a}.bai ]; then
+    echo " ${a}.bai file not found!. Did you forget to sort and index bam files?"
     exit 1
 fi
-if [ ! -f ${2}.bai ]; then
-    echo " ${2}.bai file not found!. Did you forget to sort and index bam files?"
+if [ ! -f ${b}.bai ]; then
+    echo " ${b}.bai file not found!. Did you forget to sort and index bam files?"
     exit 1
 fi
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
@@ -114,10 +61,10 @@ echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 begin=`date +%s`
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${1}| bcftools call -mv -Ov -o ${control_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g} --threads ${t} -Ou ${a}| bcftools call -mv -Ov -o ${control_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${ref} --threads ${threads} -Ou ${2}| bcftools call -mv -Ov -o ${case_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g} --threads ${t} -Ou ${b}| bcftools call -mv -Ov -o ${case_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
@@ -140,7 +87,7 @@ echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Selecting variants in case VCF not present in control VCF:"
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
-vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${ref} --invert > case_variants.vcf
+vcfintersect -i Control_initial_filter.vcf ${case_name}.bcftools.vcf -r ${g} --invert > case_variants.vcf
 echo "Done"
 echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
@@ -158,9 +105,9 @@ echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Intersecting case variants in the ranges of control bam file:"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
-bamToBed -i ${1} > Control.bed
+bamToBed -i ${a} > Control.bed
 mergeBed -i Control.bed > Control.merged.bed
-multiBamCov -bams ${1} -bed Control.merged.bed > control_counts
+multiBamCov -bams ${a} -bed Control.merged.bed > control_counts
 awk '{ if ($4 > 0) { print } }' control_counts > filter_merged.bed
 vcfintersect -b filter_merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
 echo "Done"
@@ -193,12 +140,12 @@ echo ""
 # configuration
 begin=`date +%s`
 ./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaGermlineWorkflow.py \
-    --bam ${1} \
-    --bam ${2} \
-    --referenceFasta ${3} \
+    --bam ${a} \
+    --bam ${b} \
+    --referenceFasta ${g} \
     --runDir strelka_germline
 # execution on a single local machine with n parallel jobs
-strelka_germline/runWorkflow.py -m local -j ${5}
+strelka_germline/runWorkflow.py -m local -j ${t}
 printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
 end=`date +%s`
@@ -220,12 +167,12 @@ printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 # configuration
 begin=`date +%s`
 ./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
-    --normalBam ${1} \
-    --tumorBam ${2} \
-    --referenceFasta ${3} \
+    --normalBam ${a} \
+    --tumorBam ${b} \
+    --referenceFasta ${g} \
     --runDir strelka_somatic
 # execution on a single local machine with n parallel jobs
-strelka_somatic/runWorkflow.py -m local -j ${5}
+strelka_somatic/runWorkflow.py -m local -j ${t}
 echo ""
 printf "${CYAN}:::::::::::::::::::::\n"
 echo "Variant Calling done"
@@ -260,24 +207,24 @@ grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
 cat strelka_somatic_header.vcf strelka_somatic_SNVs.vcf > strelka_somatic.vcf
 rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
-vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${ref} --invert > Case.filtered.st.vcf
-vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${ref} > Case.filtered.strelka.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${g} --invert > Case.filtered.st.vcf
+vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${g} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf strelka_somatic.vcf
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${ref} --invert > somatic-final.vcf
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${ref} --invert > indels-final.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${g} --invert > somatic-final.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${g} --invert > indels-final.vcf
 echo "Done"
 ### Annotating variants and obtaining gene list
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::\n"
 echo "==> Annotating variants"
 printf "${YELLOW}::::::::::::::::::::::::${NC}\n"
-bedtools intersect -a ${GTF} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
+bedtools intersect -a ${r} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
 rm genes.with.variants.tabular
 sed -i 's/gene_id //g' gene_id_identifiers.tab
 sed -i 's/";//g' gene_id_identifiers.tab
-sed -i 's/"//g' gene_id_identifiers.tab  
+sed -i 's/"//g' gene_id_identifiers.tab
 mv gene_id_identifiers.tab genes_with_variants.tabular
 echo ""
 ### Output files
@@ -289,14 +236,14 @@ mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.v
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./${case_name} folder"
 echo ""
-echo "(1) Case.filtered.strelka.gtf"     
-echo "(2) Case.filtered.strelka.vcf"    
+echo "(1) Case.filtered.strelka.gtf"
+echo "(2) Case.filtered.strelka.vcf"
 echo "(3) genes_with_variants.tabular"
 echo "(4) strelka_germline_variants.filtered.vcf"
 echo "(5) strelka_somatic_variants.filtered.vcf"
 echo "(6) strelka_somatic_indels.filtered.vcf"
-echo "(7) somatic-final.vcf" 
-echo "(8) indels-final.vcf" 
+echo "(7) somatic-final.vcf"
+echo "(8) indels-final.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
