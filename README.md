@@ -54,7 +54,7 @@ After these steps, a conda enviroment called variants2genes can be managed as fo
 
 # Usage:
 
-After installation, provide:
+Check binaries in ```variants2genes/bin/```. The pipeline will requiere:
 ```
     -a  File or path to Control bam file (sorted and indexed)
     -b  File or path to Case bam file (sorted and indexed)
@@ -62,11 +62,12 @@ After installation, provide:
     -r  Gene annotation (in GTF format)
     -t  Number of threads for processing (integer)
 ```
-Then, if variants2genes binary is copied in /usr/local/bin/, execute as follows:
+As example, for mouse RNA-seq data (mm10 genome), execute as follows:
 ```
+genome-download mm10    # will download mm10.fa and mm10.gtf files in place.  
 variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -t 20
 ```
-Otherwise, provide full path to this binary, located in ```variants2genes/bin/``` 
+- A folder named "KO" will contain tthe results. 
 
 ## Example: Collect KO-linked variants from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
