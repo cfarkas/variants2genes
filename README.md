@@ -40,8 +40,7 @@ sudo cp ./bin/* /usr/local/bin/
 
 Also install (not through conda):
 
-- ```ncbi-blast+``` version equal or higher than v2.7.1. To install it, see here: https://github.com/cfarkas/annotate_my_genomes/wiki#5-installing-up-to-date-ncbi-blast-version-v271
-- ```SAMtools``` . To install it, see here: https://github.com/cfarkas/annotate_my_genomes/wiki#9-obtaining-and-installing-up-to-date-samtools-with-htslib-version--19
+- ```SAMtools``` and ```bcftools```. To install it, see here: https://github.com/cfarkas/annotate_my_genomes/wiki#9-obtaining-and-installing-up-to-date-samtools-with-htslib-version--19
 
 After these steps, a conda enviroment called variants2genes can be managed as follows:
 ```
