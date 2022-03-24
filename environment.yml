@@ -6,8 +6,6 @@ dependencies:             # everything under this, installed by conda
 - parallel
 - vcflib
 - bedtools
-- samtools
-- bcftools
 - tabix
 - sra-tools
 - ncbi-ngs-sdk
