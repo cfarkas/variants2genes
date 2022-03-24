@@ -37,6 +37,12 @@ bash makefile                                                  # make  & install
 ```
 sudo cp ./bin/* /usr/local/bin/
 ```
+
+Also install (not through conda):
+
+- ```ncbi-blast+``` version equal or higher than v2.7.1. To install it, see here: https://github.com/cfarkas/annotate_my_genomes/wiki#5-installing-up-to-date-ncbi-blast-version-v271
+- ```SAMtools``` . To install it, see here: https://github.com/cfarkas/annotate_my_genomes/wiki#9-obtaining-and-installing-up-to-date-samtools-with-htslib-version--19
+
 After these steps, a conda enviroment called variants2genes can be managed as follows:
 ```
 # To activate this environment, use
@@ -46,6 +52,15 @@ After these steps, a conda enviroment called variants2genes can be managed as fo
 # To deactivate an active environment, use
 #
 #     $ conda deactivate
+```
+
+#### Notes: 
+
+- By activating variants2genes enviroment, all binaries in the variants2genes repository can be executed.
+
+- Uninstall environment as follows: 
+```
+conda remove --name variants2genes --all
 ```
 
 ### Option 2: Without using conda, program by program:
