@@ -78,6 +78,9 @@ Check binaries in ```variants2genes/bin/```. ```variants2genes``` pipeline will 
 ```
 As example, for mouse RNA-seq data (mm10 genome), execute as follows:
 ```
+# load environment
+conda activate variants2genes
+
 # Download mm10.fa and mm10.gtf files in place
 genome-download mm10   
 
