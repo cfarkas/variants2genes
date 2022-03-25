@@ -301,8 +301,8 @@ rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
 vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > Case.filtered.st.vcf
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered.strelka.vcf
 rm Case.filtered.st.vcf strelka_somatic.vcf
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > somatic-final.vcf
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > indels-final.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_somatic-final.vcf
+vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_indels-final.vcf
 echo "Done"
 ### Annotating variants and obtaining gene list
 echo ""
@@ -336,8 +336,8 @@ echo "(8) strelka_indels-final.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
-echo "(1): Germline Case associated variants in GTF format"
-echo "(2): Germiline Case-associated variants in VCF format"
+echo "(1): Germline case associated variants in GTF format"
+echo "(2): Germiline case-associated variants in VCF format"
 echo "(3): List of genes with germline variants in tabular format"
 echo "(4): Strelka germline variants, associated with case bam file"
 echo "(5): Strelka somatic variants, associated with case bam file"
