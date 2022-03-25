@@ -257,7 +257,7 @@ echo "==> Continue with Somatic Variant Calling"
 printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 # configuration
 begin=`date +%s`
-./strelka-2.9.2.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
+./strelka-2.9.10.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
     --normalBam ${a_DIR}/${control_bam_file} \
     --tumorBam ${b_DIR}/${case_bam_file} \
     --referenceFasta ${g_DIR}/${reference_genome} \
