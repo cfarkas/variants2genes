@@ -153,6 +153,11 @@ cd variants2genes_$sec
 echo "Done"
 echo ""
 
+### Clearing up reference genome dict file. 
+reference_genome_extension="$reference_genome##*.}"
+reference_genome_name="${reference_genome%.*}"
+rm -rf ${g_DIR}/${reference_genome_name}.dict
+
 ### Variant Calling
 if [ ! -f ${a_DIR}/${control_bam_file}.bai ]; then
     echo " ${a}.bai file not found!. Did you forget to sort and index bam files?"
