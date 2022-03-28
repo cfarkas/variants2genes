@@ -4,7 +4,7 @@ set -e
 
 {
 
-usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-r <genome.gtf>] [-s <SNPs>] [-t <threads>]
+usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-r <genome.gtf>] [-s <known-snps.vcf>] [-t <threads>]
 This program will call variants using bcftools in Control and Case bam files to obtain case-linked variants and will filter these variants by using BEDtools and Strelka somatic variant caller.
 Arguments:
     -h  show this help text
