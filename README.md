@@ -29,8 +29,28 @@ Pipeline Outline:
 git clone https://github.com/cfarkas/variants2genes.git        # clone repository
 cd variants2genes                                              # enter repository
 conda config --add channels bioconda                           # add bioconda channel (if you haven't already done so)
-conda env update --file environment.yml                        # install required programs
-conda activate variants2genes                                  # load environment
+conda create --name variants2genes2 picard=2.18.7              # create environment
+conda activate variants2genes2                                 # activate environment
+
+# Install packages
+conda install -c conda-forge -y parallel 
+conda install -c bioconda -y vcflib
+conda install -c bioconda -y bedtools
+conda install -c bioconda -y tabix
+conda install -c bioconda -y sra-tools
+conda install -c bioconda -y ncbi-ngs-sdk
+conda install -c bioconda -y hisat2
+conda install -c bioconda -y minimap2
+conda install -c bioconda -y fastp
+conda install -c bioconda -y r-ggplot2
+conda install -c bioconda -y r-reshape2
+conda install -c bioconda -y r-dplyr
+conda install -c bioconda -y r-gridextra
+conda install -c conda-forge -y coreutils
+conda install -c anaconda -y gawk
+conda install -c conda-forge -y sed
+conda install -c bioconda gatk4=4.0.5.1
+
 bash makefile                                                  # make  & install
 ```
 - Optionally (requires sudo privileges)
