@@ -321,9 +321,10 @@ echo ""
 ### Output files
 echo ":::: All done ::::"
 rm Case.filtered.vcf
-# mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *filtered.vcf somatic-final.vcf indels-final.vcf ./${case_name}
+mkdir output_files
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *filtered.vcf strelka_somatic-final.vcf strelka_indels-final.vcf ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "The following files are located in the the ./variants2genes_$sec folder"
+echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
 echo "(1) Case.filtered.strelka.gtf"
 echo "(2) Case.filtered.strelka.vcf"
