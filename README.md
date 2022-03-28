@@ -109,7 +109,7 @@ genome-download mm10
 # Execute the pipeline using 20 threads for processing
 variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
-- After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` where ```$DATE_OF_EXECUTION = Day:Month:Year_Hour:Minute:Sec```, will contain the results. 
+- After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` where ```$DATE_OF_EXECUTION = Day:Month:Year_Hour:Minute:Sec``` when the pipeline was invoked, will contain the results. 
 - To obtain known snps for each species, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
 
 ## Example: Collect KO-linked variants from RNA-seq data:
