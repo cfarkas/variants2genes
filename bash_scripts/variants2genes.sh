@@ -4,7 +4,7 @@ set -e
 
 {
 
-usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-r <genome.gtf>] [-t <threads>]
+usage="$(basename "$0") [-h] [-a <Control bam file>] [-b <Case bam file>] [-g <genome.fasta>] [-r <genome.gtf>] [-s <SNPs>] [-t <threads>]
 This program will call variants using bcftools in Control and Case bam files to obtain case-linked variants and will filter these variants by using BEDtools and Strelka somatic variant caller.
 Arguments:
     -h  show this help text
@@ -12,8 +12,9 @@ Arguments:
     -b  File or path to Case bam file (sorted and indexed)
     -g  Reference genome (in fasta format)
     -r  Gene annotation (in GTF format)
+    -s  known snps (in VCF format, for base recalibration)
     -t  Number of threads for processing (integer)"
-options=':ha:b:g:r:t:'
+options=':ha:b:g:r:s:t:'
 while getopts $options option; do
   case "$option" in
     h) echo "$usage"; exit;;
@@ -28,8 +29,8 @@ while getopts $options option; do
 done
 
 # mandatory arguments
-if [ ! "$a" ] || [ ! "$b" ] || [ ! "$g" ] || [ ! "$r" ] || [ ! "$t" ]; then
-  echo "arguments -a, -b, -g, -r and -t must be provided"
+if [ ! "$a" ] || [ ! "$b" ] || [ ! "$g" ] || [ ! "$r" ] || [ ! "$s" ] || [ ! "$t" ]; then
+  echo "arguments -a, -b, -g, -r, -s and -t must be provided"
   echo "$usage" >&2; exit 1
 fi
 
@@ -63,6 +64,13 @@ if [ ! -e "$r" ]; then
     exit 9999 # die with error code 9999
 fi
 
+if [ ! -e "$s" ]; then
+    echo ""
+    echo "$s does not exist. Check your -s input"
+    echo ""
+    exit 9999 # die with error code 9999
+fi
+
 # Conditions : Getting absolute path of inputs
 echo ""
 a_DIR="$( cd "$( dirname "$a" )" && pwd )"
@@ -80,6 +88,10 @@ echo ""
 r_DIR="$( cd "$( dirname "$r" )" && pwd )"
 echo ""
 echo "::: The absolute path of -r is $r_DIR"
+echo ""
+s_DIR="$( cd "$( dirname "$s" )" && pwd )"
+echo ""
+echo "::: The absolute path of -s is $s_DIR"
 echo ""
 
 #    .---------- constant part!
@@ -120,9 +132,14 @@ basename "$FILE4"
 reference_genome="$(basename -- $FILE4)"
 echo "The reference genome used as input is the following: $reference_genome"
 echo ""
-FILE5="$t"
+FILE5="$g"
 basename "$FILE5"
-threads="$(basename -- $FILE5)"
+known_snps="$(basename -- $FILE5)"
+echo "The known SNPs collection used as input is the following: $reference_genome"
+echo ""
+FILE6="$t"
+basename "$FILE6"
+threads="$(basename -- $FILE6)"
 echo "The number of threads for calculation are the following: $threads"
 echo ""
 
@@ -144,6 +161,69 @@ if [ ! -f ${b_DIR}/${case_bam_file}.bai ]; then
     echo " ${b}.bai file not found!. Did you forget to sort and index bam files?"
     exit 1
 fi
+
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> MarkDuplicates in Control and Case BAM files using picard tools:"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+picard MarkDuplicates I=${a_DIR}/${control_bam_file} O=${control_bam_file_name}_marked_duplicates.bam M=${control_bam_file_name}_marked_dup_metrics.txt
+picard MarkDuplicates I=${b_DIR}/${control_bam_file} O=${case_bam_file_name}_marked_duplicates.bam M=${case_bam_file_name}_marked_dup_metrics.txt
+echo ""
+echo "Done. Duplicate identification was successful. Continue."
+echo ""
+
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Sorting Control and Case BAM files using picard tools:"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+picard SortSam I=${control_bam_file_name}_marked_duplicates.bam O=${control_bam_file_name}_marked_duplicates.sorted.bam SORT_ORDER=coordinate CREATE_INDEX=true
+picard SortSam I=${case_bam_file_name}_marked_duplicates.bam O=${case_bam_file_name}_marked_duplicates.sorted.bam SORT_ORDER=coordinate CREATE_INDEX=true
+echo ""
+echo "Sorting was Done. Continue"
+echo ""
+
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Assigns all the reads in BAM files to a single new read-group using picard tools :"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+picard AddOrReplaceReadGroups I=${control_bam_file_name}_marked_duplicates.sorted.bam O=${control_bam_file_name}.for_gatk4.bam RGID=4 RGLB=lib1 RGPL=ILLUMINA RGPU=unit1 RGSM=20
+picard AddOrReplaceReadGroups I=${case_bam_file_name}_marked_duplicates.sorted.bam O=${case_bam_file_name}.for_gatk4.bam RGID=4 RGLB=lib1 RGPL=ILLUMINA RGPU=unit1 RGSM=20
+echo ""
+echo "Assignments were Done. Continue with gatk4 base recalibration"
+echo ""
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Performing gatk4 BaseRecalibrator on BAM files using user-provided known SNP sites in VCF format:"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+gatk CreateSequenceDictionary -R ${g_DIR}/${reference_genome}
+gatk IndexFeatureFile -F ${s_DIR}/${known_snps}
+gatk BaseRecalibrator --input ${control_bam_file_name}.for_gatk4.bam --reference ${g_DIR}/${reference_genome} --known-sites ${s_DIR}/${known_snps} --output ${control_bam_file_name}_recal_data.table
+gatk BaseRecalibrator --input ${case_bam_file_name}.for_gatk4.bam --reference ${g_DIR}/${reference_genome} --known-sites ${s_DIR}/${known_snps} --output ${case_bam_file_name}_recal_data.table
+echo ""
+echo "Recalibration was Done. We will apply base recalibration on bam files using recently created recalibration tables"
+echo ""
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Apply gatk4 BaseRecalibrator on BAM files using recalibration tables:"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+gatk ApplyBQSR -R mm10.fa -I ${control_bam_file_name}.for_gatk4.bam --bqsr-recal-file ${control_bam_file_name}_recal_data.table -O ${control_bam_file_name}.recalibrated.bam
+gatk ApplyBQSR -R mm10.fa -I ${case_bam_file_name}.for_gatk4.bam --bqsr-recal-file ${case_bam_file_name}_recal_data.table -O ${case_bam_file_name}.recalibrated.bam
+echo ""
+echo "Recalibration on BAM files was Done. Continue with sorting and variant calling"
+echo ""
+
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::\n"
+echo "==> Sorting and index BAM files with SAMtools:"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+samtools sort -o ${control_bam_file_name}.recalibrated.sorted.bam ${control_bam_file_name}.recalibrated.bam -@ ${t} && samtools index ${control_bam_file_name}.recalibrated.sorted.bam -@ ${t}
+samtools sort -o ${case_bam_file_name}.recalibrated.sorted.bam ${case_bam_file_name}.recalibrated.bam -@ ${t} && samtools index ${case_bam_file_name}.recalibrated.sorted.bam -@ ${t}
+echo ""
+echo "Sorting was done, continue with variant calling"
+echo ""
+
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
@@ -179,15 +259,15 @@ vcfintersect -i Control_initial_filter.vcf ${case_bam_file_name}.bcftools.vcf -r
 echo "Done"
 echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 30"
+echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 20"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
-vcffilter -f "QUAL > 30" case_variants.vcf > case_variants.QUAL1.filter.vcf
+vcffilter -f "QUAL > 20" case_variants.vcf > case_variants.QUAL1.filter.vcf
 echo "First filter done"
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Case VCF file: Filtering with vcflib ---> DP > 8"
+echo "==> Case VCF file: Filtering with vcflib ---> DP > 4"
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
-vcffilter -f "DP > 8" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
+vcffilter -f "DP > 4" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
 echo "Second filter done"
 echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
@@ -329,22 +409,22 @@ echo ""
 echo "(1) Case.filtered.strelka.gtf"
 echo "(2) Case.filtered.strelka.vcf"
 echo "(3) genes_with_variants.tabular"
-echo "(4) strelka_germline_variants.filtered.vcf"
-echo "(5) strelka_somatic_variants.filtered.vcf"
-echo "(6) strelka_somatic_indels.filtered.vcf"
-echo "(7) strelka_somatic-final.vcf"
-echo "(8) strelka_indels-final.vcf"
+echo "(4) strelka_somatic-final.vcf"
+echo "(5) strelka_indels-final.vcf"
+echo "(6) strelka_germline_variants.filtered.vcf"
+echo "(7) strelka_somatic_variants.filtered.vcf"
+echo "(8) strelka_somatic_indels.filtered.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
-echo "(1): Germline case associated variants in GTF format"
-echo "(2): Germiline case-associated variants in VCF format"
-echo "(3): List of genes with germline variants in tabular format"
-echo "(4): Strelka germline variants, associated with case bam file"
-echo "(5): Strelka somatic variants, associated with case bam file"
-echo "(6): Strelka somatic indels, associated with case bam file"
-echo "(7): Filtered somatic variants associated with case bam file"
-echo "(8): Filtered indels variants associated with case bam file"
+echo "(1): Germline case associated variants in GTF format (this pipeline)"
+echo "(2): Germiline case-associated variants in VCF format (this pipeline)"
+echo "(3): List of genes with germline variants in tabular format (this pipeline)"
+echo "(4): Filtered somatic case associated variants variants (this pipeline)"
+echo "(5): Filtered indels case associated variants variants (this pipeline)"
+echo "(6): Strelka germline variants, associated with case bam file (strelka2 output)"
+echo "(7): Strelka somatic variants, associated with case bam file (strelka2 output)"
+echo "(8): Strelka somatic indels, associated with case bam file (strelka2 output)"
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 #
