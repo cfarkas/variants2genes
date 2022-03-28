@@ -91,7 +91,7 @@ variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/m
 
 ## Example: Collect KO-linked variants from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
-- As outputs, the pipeline will take BAM file names until a point is encountered (i.e. for SRR8267474.sorted.bam ==> SRR8267474) so distinctive BAM file names are desired when naming bam files. 
+- As outputs, the pipeline will take BAM file names until the ```.bam``` prefix is encountered
 - From scratch, inside variants2genes folder:
 
 ```
@@ -102,7 +102,7 @@ mkdir SALL2_WT_vs_KO && cd SALL2_WT_vs_KO
 ../bin/genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
-## STEP 2: Download and align SALL2 Wild type and Knockout reads using SRA accessions, using 25 threads.
+## STEP 2: Download and align SALL2 Wild type and Knockout reads with HISAT2, using 25 threads.
 prefetch -O ./ SRR8267474 && fastq-dump --gzip SRR8267474            # WT sample
 hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
 prefetch -O ./ SRR8267458 && fastq-dump --gzip SRR8267458            # KO sample
