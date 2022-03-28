@@ -30,8 +30,8 @@ Pipeline Outline:
 git clone https://github.com/cfarkas/variants2genes.git        # clone repository
 cd variants2genes                                              # enter repository
 conda config --add channels bioconda                           # add bioconda channel (if you haven't already done so)
-conda create --name variants2genes2 picard=2.18.7              # create environment
-conda activate variants2genes2                                 # activate environment
+conda create --name variants2genes picard=2.18.7               # create environment
+conda activate variants2genes                                  # activate environment
 
 # Install packages
 conda install -c conda-forge -y parallel 
