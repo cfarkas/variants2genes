@@ -12,10 +12,11 @@ The pipeline requieres BASH and R enviroment and is available for several organi
 Pipeline Outline:
 
 ```
-1) Call variants in Control and Case samples using bcftools mpileup.
-2) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
-3) Call germline and somatic variants in both samples using Strelka2 variant caller.
-4) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. 
+1) Picard and GATK4 best practices for preprocessing BAM files : https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels-
+2) Call variants in Control and Case samples using bcftools mpileup.
+3) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
+4) Call germline and somatic variants in both samples using Strelka2 variant caller.
+5) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. 
 
 - The output from these steps will output case-linked variants and correspondent genes. 
 - Case-linked somatic variants and case-linked INDELs were be also reported.
