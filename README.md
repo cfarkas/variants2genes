@@ -12,7 +12,7 @@ The pipeline requieres BASH and R enviroment and is available for several organi
 Pipeline Outline:
 
 ```
-1) Picard and GATK4 best practices for preprocessing BAM files : https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels-
+1) Picard and GATK4 best practices preprocessing of BAM files : https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels-
 2) Call variants in Control and Case samples using bcftools mpileup.
 3) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
 4) Call germline and somatic variants in both samples using Strelka2 variant caller.
@@ -95,6 +95,7 @@ Check binaries in ```variants2genes/bin/```. ```variants2genes``` pipeline will 
     -b  File or path to Case bam file (sorted and indexed)
     -g  Reference genome (in fasta format)
     -r  Gene annotation (in GTF format)
+    -s  known SNPs for base recalibration (in VCF format)
     -t  Number of threads for processing (integer)
 ```
 As example, for mouse RNA-seq data (mm10 genome), execute as follows:
@@ -106,9 +107,10 @@ conda activate variants2genes
 genome-download mm10   
 
 # Execute the pipeline using 20 threads for processing
-variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -t 20
+variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
-- After these steps, a folder named "KO" will contain the results. 
+- After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` with $DATE = Day:Month:Year_Hour:Minute:Sec will contain the results. 
+- To obtain known snps for each species, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
 
 ## Example: Collect KO-linked variants from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
@@ -137,9 +139,10 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 2
 ../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
 
 ## STEP 5: Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -t 20
+wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
+../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
-Check KO sub-folder with output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
+Inside ```variants2genes_$DATE_OF_EXECUTION```, check ```output_files``` sub-folder containing output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
 
 ## Employing user-provided genome and/or GTF files:
 
