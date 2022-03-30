@@ -118,6 +118,7 @@ variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/m
 - As outputs, the pipeline will take BAM file names until the ```.bam``` prefix is encountered
 - From scratch, inside variants2genes folder:
 
+#### Preeliminars:
 ```
 # Inside variants2genes folder
 mkdir SALL2_WT_vs_KO && cd SALL2_WT_vs_KO
@@ -138,7 +139,9 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 2
 
 ## STEP 4 (optional): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
 ../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
-
+```
+#### Pipeline:
+```
 ## STEP 5: Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
 ../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
