@@ -116,7 +116,7 @@ variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/m
 ## Example: Collect KO-linked variants from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
 - As outputs, the pipeline will take BAM file names until the ```.bam``` prefix is encountered
-- From scratch, inside variants2genes folder:
+- From scratch, inside ```variants2genes``` folder:
 
 #### Preeliminars:
 ```
@@ -143,7 +143,9 @@ samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 2
 #### Pipeline:
 ```
 ## Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
+
 wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
+
 ../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
 Inside ```variants2genes_$DATE_OF_EXECUTION```, check ```output_files``` sub-folder containing output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
