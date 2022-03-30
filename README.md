@@ -50,7 +50,7 @@ conda install -c bioconda -y r-gridextra
 conda install -c conda-forge -y coreutils
 conda install -c anaconda -y gawk
 conda install -c conda-forge -y sed
-conda install -c bioconda gatk4=4.0.5.1
+conda install -c bioconda -y gatk4=4.0.5.1
 
 bash makefile                                                  # make  & install
 ```
