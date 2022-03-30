@@ -123,26 +123,26 @@ variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/m
 # Inside variants2genes folder
 mkdir SALL2_WT_vs_KO && cd SALL2_WT_vs_KO
 
-## STEP 1: Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
+## 1) Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
 ../bin/genome-download mm10
 hisat2-build mm10.fa mm10_hisat2
 
-## STEP 2: Download and align SALL2 Wild type and Knockout reads with HISAT2, using 25 threads.
+## 2) Download and align SALL2 Wild type and Knockout reads with HISAT2, using 25 threads.
 prefetch -O ./ SRR8267474 && fastq-dump --gzip SRR8267474            # WT sample
 hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
 prefetch -O ./ SRR8267458 && fastq-dump --gzip SRR8267458            # KO sample
 hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
 
-## STEP 3: sort and index bam samples using 25 threads
+## 3) sort and index bam samples using 25 threads
 samtools sort -o WT.sorted.bam WT.bam -@ 25 && samtools index WT.sorted.bam -@ 25
 samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 25
 
-## STEP 4 (optional): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
+## 4) (optional): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
 ../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
 ```
 #### Pipeline:
 ```
-## STEP 5: Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
+## Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
 wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
 ../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
