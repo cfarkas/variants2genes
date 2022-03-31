@@ -51,6 +51,7 @@ conda install -c conda-forge -y coreutils
 conda install -c anaconda -y gawk
 conda install -c conda-forge -y sed
 conda install -c bioconda -y gatk4=4.0.5.1
+conda install -c bioconda -y freebayes
 
 bash makefile                                                  # make  & install
 ```
