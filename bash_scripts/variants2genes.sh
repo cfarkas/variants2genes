@@ -173,7 +173,7 @@ echo "==> MarkDuplicates in Control and Case BAM files using picard tools:"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 picard MarkDuplicates I=${a_DIR}/${control_bam_file} O=${control_bam_file_name}_marked_duplicates.bam M=${control_bam_file_name}_marked_dup_metrics.txt
-picard MarkDuplicates I=${b_DIR}/${control_bam_file} O=${case_bam_file_name}_marked_duplicates.bam M=${case_bam_file_name}_marked_dup_metrics.txt
+picard MarkDuplicates I=${b_DIR}/${case_bam_file} O=${case_bam_file_name}_marked_duplicates.bam M=${case_bam_file_name}_marked_dup_metrics.txt
 echo ""
 echo "Done. Duplicate identification was successful. Continue."
 echo ""
