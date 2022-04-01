@@ -235,24 +235,44 @@ echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 begin=`date +%s`
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${a_DIR}/${control_bam_file} | bcftools call -mv -Ov -o ${control_bam_file_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${control_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${control_bam_file_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
-bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${b_DIR}/${case_bam_file} | bcftools call -mv -Ov -o ${case_bam_file_name}.vcf
+bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${case_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${case_bam_file_name}.vcf
 end=`date +%s`
 elapsed=`expr $end - $begin`
 echo ""
 printf "${CYAN}:::::::::::::::::::::\n"
-echo "Variant Calling done"
+echo " bcftools variant Calling done"
 echo ""
 echo Time taken: $elapsed
 printf "${CYAN}:::::::::::::::::::::${NC}\n"
 echo ""
+
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Performing Variant Calling with freebayes (see: https://github.com/freebayes/freebayes):"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+begin=`date +%s`
+freebayes -f ${g_DIR}/${reference_genome} -C 3 ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.freebayes.vcf
+echo "done with Control Bam file. Continue with Case bam file..."
+echo ""
+freebayes -f ${g_DIR}/${reference_genome} -C 3 ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.freebayes.vcf
+end=`date +%s`
+elapsed=`expr $end - $begin`
+echo ""
+printf "${CYAN}:::::::::::::::::::::\n"
+echo "Freebayes variant Calling done"
+echo ""
+echo Time taken: $elapsed
+printf "${CYAN}:::::::::::::::::::::${NC}\n"
+echo ""
+
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Filtering and intersecting VCF files"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-### Filtering and intersecting VCF files
+### Filtering and intersecting VCF files to discover germline variants
 echo "Filtering with bcftools control and case vcf files..."
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_bam_file_name}.vcf > Control_initial_filter.vcf
 bcftools filter -e'%QUAL<10 ||(RPB<0.1 && %QUAL<15) || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_bam_file_name}.vcf > ${case_bam_file_name}.bcftools.vcf
@@ -392,9 +412,9 @@ vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r
 echo "Done"
 ### Annotating variants and obtaining gene list
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::\n"
-echo "==> Annotating variants"
-printf "${YELLOW}::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::\n"
+echo "==> Annotating Germline variants"
+printf "${YELLOW}::::::::::::::::::::::::::::::${NC}\n"
 bedtools intersect -a ${r_DIR}/${reference_gtf} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
@@ -404,11 +424,74 @@ sed -i 's/";//g' gene_id_identifiers.tab
 sed -i 's/"//g' gene_id_identifiers.tab
 mv gene_id_identifiers.tab genes_with_variants.tabular
 echo ""
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Joining bcftools, freebayes and strelka2 variants to discover somatic variants with varlociraptor"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+echo "==> BGZIP, tabix and merge control and case freebayes variants:"
+parallel bgzip ::: ${control_bam_file_name}.freebayes.vcf ${case_bam_file_name}.freebayes.vcf                                                                 # bgzip VCF files
+parallel tabix -p vcf ::: ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz                                                    # tabix VCF files
+bcftools merge -o freebayes_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz --force-samples    # join VCF files
+echo ""
+echo "Done"
+echo ""
+
+echo "==> BGZIP, tabix and merge control and case freebayes variants:"
+parallel bgzip ::: ${control_bam_file_name}.vcf ${case_bam_file_name}.vcf                                                                    # bgzip VCF files
+parallel tabix -p vcf ::: ${control_bam_file_name}.vcf.gz ${case_bam_file_name}.vcf.gz                                                       # tabix VCF files
+bcftools merge -o bcftools_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.vcf.gz ${case_bam_file_name}.vcf.gz --force-samples        # join VCF files
+echo ""
+echo "Done"
+echo ""
+
+echo "==> BGZIP, tabix and merge control and case strelka2 variants:"
+parallel bgzip ::: strelka_germline_variants.filtered.vcf strelka_somatic-final.vcf strelka_indels-final.vcf                                                                   # bgzip VCF files
+parallel tabix -p vcf ::: strelka_germline_variants.filtered.vcf.gz strelka_somatic-final.vcf.gz strelka_indels-final.vcf.gz                                                   # tabix VCF files
+bcftools merge -o strelka2_for_varlociraptor.vcf.gz -O z strelka_germline_variants.filtered.vcf.gz strelka_somatic-final.vcf.gz strelka_indels-final.vcf.gz --force-samples    # join VCF files
+echo ""
+echo "Done"
+echo ""
+
+echo "==> merge variants from the three variant callers"
+tabix -p vcf bcftools_for_varlociraptor.vcf.gz 
+tabix -p vcf freebayes_for_varlociraptor.vcf.gz 
+tabix -p vcf strelka2_for_varlociraptor.vcf.gz  
+bcftools merge -o variants_for_varlociraptor.vcf.gz -O z bcftools_for_varlociraptor.vcf.gz freebayes_for_varlociraptor.vcf.gz strelka2_for_varlociraptor.vcf.gz --force-samples # join VCF files
+echo ""
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::\n"
+echo "==> Executing varlociraptor filtering"
+printf "${YELLOW}::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${CYAN} #1: Estimating alignment properties ${NC}\n"
+varlociraptor estimate alignment-properties ${g_DIR}/${reference_genome} --bam ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.varlociraptor.alignment-properties.json
+varlociraptor estimate alignment-properties ${g_DIR}/${reference_genome} --bam ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.varlociraptor.alignment-properties.json
+echo ""
+echo "Done"
+echo ""
+printf "${CYAN} #2: preprocessing variants ${NC}\n"
+varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${control_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.varlociraptor.bcf
+varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${case_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.varlociraptor.bcf
+echo ""
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Call and filter variants with varlociraptor"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+# call variants
+varlociraptor call variants tumor-normal --tumor ${case_bam_file_name}.varlociraptor.bcf --normal ${control_bam_file_name}.varlociraptor.bcf > varlociraptor-case-somatic.bcf
+bcftools convert -O v -o varlociraptor-case-somatic.vcf varlociraptor-case-somatic.bcf
+# filter variants
+varlociraptor filter-calls control-fdr --local varlociraptor-case-somatic.bcf --events SOMATIC_TUMOR --fdr 0.01 --var SNV > varlociraptor-case-somatic.FDR_1e-2.bcf
+bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.vcf varlociraptor-case-somatic.FDR_1e-2.bcf
+echo ""
+echo "All done"
+echo ""
 ### Output files
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf *filtered.vcf strelka_somatic-final.vcf strelka_indels-final.vcf ./output_files
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf strelka_somatic-final.vcf strelka_indels-final.vcf ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
