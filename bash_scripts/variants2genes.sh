@@ -274,8 +274,8 @@ printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 ### Filtering and intersecting VCF files to discover germline variants
 echo "Filtering and intersecting VCF files to discover germline variants"
-bcftools filter -sLowQual -g3 -G10 -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_bam_file_name}.vcf > Control_initial_filter.vcf
-bcftools filter -sLowQual -g3 -G10 -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_bam_file_name}.vcf > ${case_bam_file_name}.bcftools.vcf
+bcftools filter -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_bam_file_name}.vcf > Control_initial_filter.vcf
+bcftools filter -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_bam_file_name}.vcf > ${case_bam_file_name}.bcftools.vcf
 echo "Done"
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
