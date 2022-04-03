@@ -492,7 +492,7 @@ echo ""
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* ./output_files
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
