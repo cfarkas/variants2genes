@@ -523,7 +523,7 @@ echo "(7): Filtered varlociraptor heterozygous germline variants (FDR<=0.01)"
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 end_0=`date +%s`
-elapsed_0=`expr $end - $begin_0`
+elapsed_0=`expr $end_0 - $begin_0`
 echo ""
 echo Time taken: $elapsed_0
 #
