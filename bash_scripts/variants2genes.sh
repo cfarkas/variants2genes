@@ -168,6 +168,8 @@ if [ ! -f ${b_DIR}/${case_bam_file}.bai ]; then
     exit 1
 fi
 
+begin_0=`date +%s`
+
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> MarkDuplicates in Control and Case BAM files using picard tools:"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
@@ -311,7 +313,6 @@ rm case_variants*
 rm Control_initial_filter.vcf
 rm *bcftools.vcf
 echo ""
-
 
 # https://github.com/Illumina/strelka/releases
 ### Performing Somatic Variant Calling with strelka v2.9.10
@@ -479,11 +480,18 @@ echo "==> Call and filter variants with varlociraptor"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 # call variants
-varlociraptor call variants tumor-normal --tumor ${case_bam_file_name}.varlociraptor.bcf --normal ${control_bam_file_name}.varlociraptor.bcf > varlociraptor-case-somatic.bcf
-bcftools convert -O v -o varlociraptor-case-somatic.vcf varlociraptor-case-somatic.bcf
-# filter variants
-varlociraptor filter-calls control-fdr --local varlociraptor-case-somatic.bcf --events SOMATIC_TUMOR --fdr 0.01 --var SNV > varlociraptor-case-somatic.FDR_1e-2.bcf
+varlociraptor call variants tumor-normal --tumor ${case_bam_file_name}.varlociraptor.bcf --normal ${control_bam_file_name}.varlociraptor.bcf > varlociraptor-variants.bcf
+bcftools convert -O v -o varlociraptor-variants.vcf varlociraptor-variants.bcf
+
+# filter variants: somatic
+varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events SOMATIC_TUMOR --fdr 0.01 --var SNV > varlociraptor-case-somatic.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.vcf varlociraptor-case-somatic.FDR_1e-2.bcf
+# filter variants: germline homozygous
+varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HOM --fdr 0.01 --var SNV > varlociraptor-germline_hom.FDR_1e-2.bcf
+bcftools convert -O v -o varlociraptor-germline_hom.FDR_1e-2.vcf varlociraptor-germline_hom.FDR_1e-2.bcf
+# filter variants: germline heterozygous
+varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HET --fdr 0.01 --var SNV > varlociraptor-germline_hom.FDR_1e-2.bcf
+bcftools convert -O v -o varlociraptor-germline_hom.FDR_1e-2.vcf varlociraptor-germline_hom.FDR_1e-2.bcf
 echo ""
 echo "All done"
 echo ""
@@ -491,31 +499,33 @@ echo ""
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf varlociraptor-case-somatic* ./output_files
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf *FDR_1e-2.vcf *FDR_1e-2.bcf ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
 echo "(1) Case.filtered.strelka.gtf"
 echo "(2) Case.filtered.strelka.vcf"
 echo "(3) genes_with_variants.tabular"
-echo "(4) strelka_somatic-final.vcf"
-echo "(5) strelka_indels-final.vcf"
-echo "(6) strelka_germline_variants.filtered.vcf"
-echo "(7) strelka_somatic_variants.filtered.vcf"
-echo "(8) strelka_somatic_indels.filtered.vcf"
+echo "(4) varlociraptor-variants.vcf"
+echo "(5) varlociraptor-case-somatic.FDR_1e-2.vcf"
+echo "(6) varlociraptor-germline_hom.FDR_1e-2.vcf"
+echo "(7) varlociraptor-germline_hom.FDR_1e-2.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
-echo "(1): Germline case associated variants in GTF format (this pipeline)"
-echo "(2): Germiline case-associated variants in VCF format (this pipeline)"
-echo "(3): List of genes with germline variants in tabular format (this pipeline)"
-echo "(4): Filtered somatic case associated variants variants (this pipeline)"
-echo "(5): Filtered indels case associated variants variants (this pipeline)"
-echo "(6): Strelka germline variants, associated with case bam file (strelka2 output)"
-echo "(7): Strelka somatic variants, associated with case bam file (strelka2 output)"
-echo "(8): Strelka somatic indels, associated with case bam file (strelka2 output)"
+echo "(1): Germline case associated variants in GTF format"
+echo "(2): Germline case-associated variants in VCF format"
+echo "(3): List of genes with germline variants in tabular format"
+echo "(4): varlociraptor complete list of variants"
+echo "(5): Filtered varlociraptor somatic variants (FDR<=0.01)"
+echo "(6): Filtered varlociraptor homozygous germline variants (FDR<=0.01)"
+echo "(7): Filtered varlociraptor heterozygous germline variants (FDR<=0.01)"
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
+end_0=`date +%s`
+elapsed_0=`expr $end - $begin_0`
+echo ""
+echo Time taken: $elapsed_0
 #
 } | tee logfile
 #
