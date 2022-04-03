@@ -236,38 +236,28 @@ printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-begin=`date +%s`
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${control_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${control_bam_file_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${case_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${case_bam_file_name}.vcf
-end=`date +%s`
-elapsed=`expr $end - $begin`
 echo ""
-printf "${CYAN}:::::::::::::::::::::\n"
-echo " bcftools variant Calling done"
-echo ""
-echo Time taken: $elapsed
-printf "${CYAN}:::::::::::::::::::::${NC}\n"
+printf "${CYAN}:::::::::::::::::::::::\n"
+echo "bcftools variant Calling done"
+printf "${CYAN}:::::::::::::::::::::::${NC}\n"
 echo ""
 
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with freebayes (see: https://github.com/freebayes/freebayes):"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-begin=`date +%s`
 freebayes -f ${g_DIR}/${reference_genome} -C 3 ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.freebayes.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
 freebayes -f ${g_DIR}/${reference_genome} -C 3 ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.freebayes.vcf
-end=`date +%s`
-elapsed=`expr $end - $begin`
 echo ""
-printf "${CYAN}:::::::::::::::::::::\n"
+printf "${CYAN}::::::::::::::::::::::::\n"
 echo "Freebayes variant Calling done"
-echo ""
-echo Time taken: $elapsed
-printf "${CYAN}:::::::::::::::::::::${NC}\n"
+printf "${CYAN}::::::::::::::::::::::::${NC}\n"
 echo ""
 
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
