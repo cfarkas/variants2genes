@@ -13,10 +13,13 @@ Pipeline Outline:
 
 ```
 1) Picard and GATK4 best practices preprocessing of BAM files : https://gatk.broadinstitute.org/hc/en-us/articles/360035531192-RNAseq-short-variant-discovery-SNPs-Indels-
-2) Call variants in Control and Case samples using bcftools mpileup.
+2) Call variants in Control and Case samples using bcftools mpileup and freebayes.
 3) Filter these variants using vcflib and bedtools (mainly to correct coverage artifacts)
 4) Call germline and somatic variants in both samples using Strelka2 variant caller.
-5) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants. 
+5) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants.
+6) join all variants for varlociraptor
+7) Obtain somatic variants associated with case sample (FDR<=0.01) via varlociraptor filtering
+8) Obtain common germline variants between control and case samples (FDR<=0.01) via varlociraptor filtering
 
 - The output from these steps will output case-linked variants and correspondent genes. 
 - Case-linked somatic variants and case-linked INDELs were be also reported.
