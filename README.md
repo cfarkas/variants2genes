@@ -64,6 +64,7 @@ Also install (not through conda):
 
 - ```SAMtools``` and ```bcftools```. To install it, see here: https://github.com/cfarkas/variants2genes/wiki#obtaining-and-installing-up-to-date-samtools-bcftools-and-htslib-latest-version115-march-24-2022
 - ```Varlociraptor``` (NOT through conda, please use Cargo). To install it, see here: https://varlociraptor.github.io/docs/installation/ and here: https://github.com/cfarkas/variants2genes/wiki#obtaining-rust-cargo-rust-package-and-install-velociraptor
+- ```Python2```. Some Ubuntu distros comes Python2 by default. In ubuntu 20.04 can be installed as follows: ```sudo apt install python2```
 
 After these steps, a conda enviroment called variants2genes can be managed as follows:
 ```
