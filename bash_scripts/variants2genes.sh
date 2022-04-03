@@ -476,6 +476,15 @@ bcftools convert -O v -o varlociraptor-variants.vcf varlociraptor-variants.bcf
 # filter variants: somatic
 varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events SOMATIC_TUMOR --fdr 0.01 --var SNV > varlociraptor-case-somatic.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.vcf varlociraptor-case-somatic.FDR_1e-2.bcf
+
+# filter variants: germline homozygous
+varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HOM --fdr 0.01 --var SNV > varlociraptor-germline_hom.FDR_1e-2.bcf
+bcftools convert -O v -o varlociraptor-germline_hom.FDR_1e-2.vcf varlociraptor-germline_hom.FDR_1e-2.bcf
+
+# filter variants: germline heterozygous
+varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HET --fdr 0.01 --var SNV > varlociraptor-germline_het.FDR_1e-2.bcf
+bcftools convert -O v -o varlociraptor-germline_het.FDR_1e-2.vcf varlociraptor-germline_het.FDR_1e-2.bcf
+
 echo ""
 echo "All done"
 echo ""
@@ -492,14 +501,18 @@ echo "(2) Case.filtered.strelka.vcf"
 echo "(3) genes_with_variants.tabular"
 echo "(4) varlociraptor-variants.vcf"
 echo "(5) varlociraptor-case-somatic.FDR_1e-2.vcf"
+echo "(6) varlociraptor-germline_hom.FDR_1e-2.vcf"
+echo "(7) varlociraptor-germline_het.FDR_1e-2.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
-echo "(1): Germline case-associated variants in GTF format"
-echo "(2): Germline case-associated variants in VCF format"
+echo "(1): Case-associated germline variants in GTF format"
+echo "(2): Case-associated germline variants in VCF format"
 echo "(3): List of genes with germline variants in tabular format"
 echo "(4): varlociraptor complete list of variants"
 echo "(5): Filtered varlociraptor somatic variants (FDR<=0.01)"
+echo "(6): Filtered varlociraptor common homozygous germline variants (FDR<=0.01)"
+echo "(7): Filtered varlociraptor common heterozygous germline variants (FDR<=0.01)"
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 end_0=`date +%s`
