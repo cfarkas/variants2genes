@@ -19,10 +19,8 @@ Pipeline Outline:
 5) Intersect (using --invert flag) strelka germline variants with bcftools filtered variants.
 6) join all variants for varlociraptor
 7) Obtain somatic variants associated with case sample (FDR<=0.01) via varlociraptor filtering
-8) Obtain grmline variants shared between control and case samples (FDR<=0.01) via varlociraptor filtering
-
-- The output from these steps will output case-linked variants and correspondent genes. 
-- Case-linked somatic variants and case-linked INDELs were be also reported.
+8) Obtain germline variants shared between control and case samples (FDR<=0.01) via varlociraptor filtering
+9) Obtain case-associated germline variants and corresponding genes harboring these variants (VCF and GTF format, respectively)
 ```
 
 # Installation:
