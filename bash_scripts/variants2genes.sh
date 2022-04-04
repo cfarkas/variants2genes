@@ -239,9 +239,9 @@ echo ""
 gatk HaplotypeCaller --input ${control_bam_file_name}.recalibrated.sorted.bam --output ${control_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
 gatk HaplotypeCaller --input ${case_bam_file_name}.recalibrated.sorted.bam --output ${case_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
 
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Hard-filter SNPs on multiple expressions using VariantFiltration"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Hard-filter SNPs on multiple expressions using gatk VariantFiltration"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 # https://gatk.broadinstitute.org/hc/en-us/articles/360035531112--How-to-Filter-variants-either-with-VQSR-or-by-hard-filtering
 gatk VariantFiltration -V ${control_bam_file_name}.gatk4.germline.vcf -filter "QD < 2.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${control_bam_file_name}.gatk4.germline.filtered.vcf
 gatk VariantFiltration -V ${case_bam_file_name}.gatk4.germline.vcf -filter "QD < 10.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${case_bam_file_name}.gatk4.germline.filtered.vcf
@@ -442,14 +442,22 @@ sed -i 's/"//g' gene_id_identifiers.tab
 mv gene_id_identifiers.tab genes_with_variants.tabular
 echo ""
 
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Joining bcftools, freebayes and strelka2 variants to discover somatic variants with varlociraptor"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Joining bcftools, gatk HaplotypeCaller, freebayes and strelka2 variants to discover somatic variants with varlociraptor"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 echo "==> BGZIP, tabix and merge control and case freebayes variants:"
 parallel bgzip ::: ${control_bam_file_name}.freebayes.vcf ${case_bam_file_name}.freebayes.vcf                                                                 # bgzip VCF files
 parallel tabix -p vcf ::: ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz                                                    # tabix VCF files
 bcftools merge -o freebayes_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz --force-samples    # join VCF files
+echo ""
+echo "Done"
+echo ""
+
+echo "==> BGZIP, tabix and merge control and case gatk HaplotypeCaller variants:"
+parallel bgzip ::: ${control_bam_file_name}.gatk4.germline.PASS.vcf ${case_bam_file_name}.gatk4.germline.PASS.vcf                                             # bgzip VCF files
+parallel tabix -p vcf ::: ${control_bam_file_name}.gatk4.germline.PASS.vcf.gz ${case_bam_file_name}.gatk4.germline.PASS.vcf.gz                                # tabix VCF files
+bcftools merge -o gatk_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.gatk4.germline.PASS.vcf.gz ${case_bam_file_name}.gatk4.germline.PASS.vcf.gz --force-samples    # join VCF files
 echo ""
 echo "Done"
 echo ""
@@ -470,11 +478,12 @@ echo ""
 echo "Done"
 echo ""
 
-echo "==> merge variants from the three variant callers"
-tabix -p vcf bcftools_for_varlociraptor.vcf.gz 
+echo "==> merge variants from the four variant callers"
+tabix -p vcf bcftools_for_varlociraptor.vcf.gz
+tabix -p vcf gatk_for_varlociraptor.vcf.gz 
 tabix -p vcf freebayes_for_varlociraptor.vcf.gz 
 tabix -p vcf strelka2_for_varlociraptor.vcf.gz  
-bcftools merge -o variants_for_varlociraptor.vcf.gz -O z bcftools_for_varlociraptor.vcf.gz freebayes_for_varlociraptor.vcf.gz strelka2_for_varlociraptor.vcf.gz --force-samples # join VCF files
+bcftools merge -o variants_for_varlociraptor.vcf.gz -O z bcftools_for_varlociraptor.vcf.gz gatk_for_varlociraptor.vcf.gz freebayes_for_varlociraptor.vcf.gz strelka2_for_varlociraptor.vcf.gz --force-samples # join VCF files
 echo ""
 
 printf "${YELLOW}::::::::::::::::::::::::::::::::\n"
