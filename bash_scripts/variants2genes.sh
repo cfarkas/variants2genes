@@ -232,6 +232,23 @@ echo ""
 echo "Sorting was done, continue with variant calling"
 echo ""
 
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Performing Variant Calling with gatk HaplotypeCaller:"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+gatk HaplotypeCaller --input ${control_bam_file_name}.recalibrated.sorted.bam --output ${control_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
+gatk HaplotypeCaller --input ${case_bam_file_name}.recalibrated.sorted.bam --output ${case_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Hard-filter SNPs on multiple expressions using VariantFiltration"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+# https://gatk.broadinstitute.org/hc/en-us/articles/360035531112--How-to-Filter-variants-either-with-VQSR-or-by-hard-filtering
+gatk VariantFiltration -V ${control_bam_file_name}.gatk4.germline.vcf -filter "QD < 2.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${control_bam_file_name}.gatk4.germline.filtered.vcf
+gatk VariantFiltration -V ${case_bam_file_name}.gatk4.germline.vcf -filter "QD < 10.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${case_bam_file_name}.gatk4.germline.filtered.vcf
+# https://gist.github.com/elowy01/93922762e131d7abd3c7e8e166a74a0b
+bcftools view -f PASS ${control_bam_file_name}.gatk4.germline.filtered.vcf > ${control_bam_file_name}.gatk4.germline.PASS.vcf
+bcftools view -f PASS ${case_bam_file_name}.gatk4.germline.filtered.vcf > ${case_bam_file_name}.gatk4.germline.PASS.vcf
+
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
@@ -274,18 +291,21 @@ printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\
 echo "==> Selecting variants in case VCF not present in control VCF:"
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcfintersect -i Control_initial_filter.vcf ${case_bam_file_name}.bcftools.vcf -r ${g_DIR}/${reference_genome} --invert > case_variants.vcf
+vcfintersect -i ${control_bam_file_name}.gatk4.germline.vcf ${case_bam_file_name}.gatk4.germline.PASS.vcf -r ${g_DIR}/${reference_genome} --invert > case_variants2.vcf
 echo "Done"
 echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 20"
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcffilter -f "QUAL > 20" case_variants.vcf > case_variants.QUAL1.filter.vcf
+vcffilter -f "QUAL > 20" case_variants2.vcf > case_variants2.QUAL1.filter.vcf
 echo "First filter done"
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Case VCF file: Filtering with vcflib ---> DP > 4"
 printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 vcffilter -f "DP > 4" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
+vcffilter -f "DP > 4" case_variants2.QUAL1.filter.vcf > case_variants2.QUAL2.filter.vcf
 echo "Second filter done"
 echo ""
 printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
@@ -296,6 +316,7 @@ mergeBed -i Control.bed > Control.merged.bed
 multiBamCov -bams ${a_DIR}/${control_bam_file} -bed Control.merged.bed > control_counts
 awk '{ if ($4 > 0) { print } }' control_counts > filter_merged.bed
 vcfintersect -b filter_merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
+vcfintersect -b filter_merged.bed case_variants2.QUAL2.filter.vcf > Case.filtered2.vcf
 echo "Done"
 echo "Initially filtered Case-associated variants are named Case.filtered.vcf"
 rm Control.bed filter_merged.bed Control.merged.bed control_counts
@@ -395,9 +416,14 @@ grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
 cat strelka_somatic_header.vcf strelka_somatic_SNVs.vcf > strelka_somatic.vcf
 rm strelka_all_somatic.vcf strelka_somatic_header.vcf strelka_somatic_SNVs.vcf
+
 vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > Case.filtered.st.vcf
+vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered2.vcf -r ${g_DIR}/${reference_genome} --invert > Case.filtered2.st.vcf
+
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered.strelka.vcf
-rm Case.filtered.st.vcf strelka_somatic.vcf
+vcfintersect -i strelka_somatic.vcf Case.filtered2.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered2.strelka.vcf
+rm Case.filtered.st.vcf Case.filtered2.st.vcf strelka_somatic.vcf
+
 vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_somatic-final.vcf
 vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_indels-final.vcf
 echo "Done"
@@ -492,7 +518,7 @@ echo ""
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
+mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf Case.filtered2.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
