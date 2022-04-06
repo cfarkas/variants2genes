@@ -531,21 +531,34 @@ varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERML
 bcftools convert -O v -o varlociraptor-germline_het.FDR_1e-2.vcf varlociraptor-germline_het.FDR_1e-2.bcf
 
 
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Filtering somatic variants using final list of germline variants"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 ####
 #### Sanity Check: Comparing combined germline variants from HaplotypeCaller and bcftools with variants from varlociraptor
 ####
 vcfintersect -i varlociraptor-germline_het.FDR_1e-2.vcf bcftools-gatk-germline.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F1.vcf
 vcfintersect -i varlociraptor-germline_hom.FDR_1e-2.vcf bcftools-gatk-germline.F1.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F2.vcf
 vcfintersect -i bcftools-gatk-germline.F2.vcf varlociraptor-case-somatic.FDR_1e-2.vcf -r ${g_DIR}/${reference_genome} --invert > varlociraptor-case-somatic.FDR_1e-2.F1.vcf
-mv bcftools-gatk-germline.F2.vcf bcftools-gatk-germline.vcf
+mv bcftools-gatk-germline.F2.vcf case-germline.vcf
 rm bcftools-gatk-germline.F1.vcf
 mv varlociraptor-case-somatic.FDR_1e-2.F1.vcf varlociraptor-case-somatic.FDR_1e-2.vcf
 
-bcftools convert -O v -o bcftools-gatk-germline.bcf bcftools-gatk-germline.vcf
+bcftools convert -O v -o case-germline.bcf case-germline.vcf
 bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.bcf varlociraptor-case-somatic.FDR_1e-2.vcf
+
+printf "${YELLOW}::::::::::::::::::::::::::::::\n"
+echo "==> Annotating Germline variants"
+printf "${YELLOW}::::::::::::::::::::::::::::::${NC}\n"
+bedtools intersect -a ${r_DIR}/${reference_gtf} -b case-germline.vcf > case-germline.gtf
+perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' case-germline.gtf > genes.with.variants.tabular
+awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
+rm genes.with.variants.tabular
+sed -i 's/gene_id //g' gene_id_identifiers.tab
+sed -i 's/";//g' gene_id_identifiers.tab
+sed -i 's/"//g' gene_id_identifiers.tab
+mv gene_id_identifiers.tab genes_with_variants.tabular
+echo ""
 
 echo ""
 echo "All done"
@@ -555,12 +568,12 @@ echo ""
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv bcftools-gatk-germline.gtf genes_with_variants.tabular bcftools-gatk-germline.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
+mv case-germline.gtf genes_with_variants.tabular case-germline.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
-echo "(1) bcftools-gatk-germline.gtf"
-echo "(2) bcftools-gatk-germline.vcf"
+echo "(1) case-germline.gtf"
+echo "(2) case-germline.vcf"
 echo "(3) genes_with_variants.tabular"
 echo "(4) varlociraptor-variants.vcf"
 echo "(5) varlociraptor-case-somatic.FDR_1e-2.vcf"
