@@ -422,18 +422,28 @@ vcfintersect -i strelka_germline_variants.filtered.vcf Case.filtered2.vcf -r ${g
 
 vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered.strelka.vcf
 vcfintersect -i strelka_somatic.vcf Case.filtered2.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered2.strelka.vcf
-rm Case.filtered.st.vcf Case.filtered2.st.vcf strelka_somatic.vcf
 
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_somatic-final.vcf
-vcfintersect -i Case.filtered.strelka.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_indels-final.vcf
+echo ""
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Combining bcftools and gatk HaplotypeCaller germline variants into a single file..."
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+parallel bgzip ::: Case.filtered.strelka.vcf Case.filtered2.strelka.vcf                                                             # bgzip VCF files
+parallel tabix -p vcf ::: Case.filtered.strelka.vcf.gz Case.filtered2.strelka.vcf.gz                                                # tabix VCF files
+bcftools merge -o bcftools-gatk-germline.vcf.gz -O z Case.filtered.strelka.vcf.gz Case.filtered2.strelka.vcf.gz  --force-samples    # join VCF files
+gunzip bcftools-gatk-germline.vcf.gz
+rm Case.filtered.st.vcf Case.filtered2.st.vcf strelka_somatic.vcf Case.filtered.strelka.vcf.gz Case.filtered2.strelka.vcf.gz
+
+vcfintersect -i bcftools-gatk-germline.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_somatic-final.vcf
+vcfintersect -i bcftools-gatk-germline.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_indels-final.vcf
 echo "Done"
 ### Annotating variants and obtaining gene list
 echo ""
 printf "${YELLOW}::::::::::::::::::::::::::::::\n"
 echo "==> Annotating Germline variants"
 printf "${YELLOW}::::::::::::::::::::::::::::::${NC}\n"
-bedtools intersect -a ${r_DIR}/${reference_gtf} -b Case.filtered.strelka.vcf > Case.filtered.strelka.gtf
-perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' Case.filtered.strelka.gtf > genes.with.variants.tabular
+bedtools intersect -a ${r_DIR}/${reference_gtf} -b bcftools-gatk-germline.vcf > bcftools-gatk-germline.gtf
+perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' bcftools-gatk-germline.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
 rm genes.with.variants.tabular
 sed -i 's/gene_id //g' gene_id_identifiers.tab
@@ -500,9 +510,9 @@ printf "${CYAN} #2: preprocessing variants ${NC}\n"
 varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${control_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.varlociraptor.bcf
 varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${case_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.varlociraptor.bcf
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
 echo "==> Call and filter variants with varlociraptor"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
 # call variants
 varlociraptor call variants tumor-normal --tumor ${case_bam_file_name}.varlociraptor.bcf --normal ${control_bam_file_name}.varlociraptor.bcf > varlociraptor-variants.bcf
@@ -523,16 +533,17 @@ bcftools convert -O v -o varlociraptor-germline_het.FDR_1e-2.vcf varlociraptor-g
 echo ""
 echo "All done"
 echo ""
+
 ### Output files
 echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
-mv Case.filtered.strelka.gtf genes_with_variants.tabular Case.filtered.strelka.vcf Case.filtered2.strelka.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
+mv bcftools-gatk-germline.gtf genes_with_variants.tabular bcftools-gatk-germline.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
 printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
-echo "(1) Case.filtered.strelka.gtf"
-echo "(2) Case.filtered.strelka.vcf"
+echo "(1) bcftools-gatk-germline.gtf"
+echo "(2) bcftools-gatk-germline.vcf"
 echo "(3) genes_with_variants.tabular"
 echo "(4) varlociraptor-variants.vcf"
 echo "(5) varlociraptor-case-somatic.FDR_1e-2.vcf"
@@ -541,8 +552,8 @@ echo "(7) varlociraptor-germline_het.FDR_1e-2.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
-echo "(1): Case-associated germline variants in GTF format"
-echo "(2): Case-associated germline variants in VCF format"
+echo "(1): Case-associated germline variants in GTF format (bcftools + gatk HaplotypeCaller calls)"
+echo "(2): Case-associated germline variants in VCF format (bcftools + gatk HaplotypeCaller calls)"
 echo "(3): List of genes with germline variants in tabular format"
 echo "(4): varlociraptor complete list of variants"
 echo "(5): Filtered varlociraptor somatic variants (FDR<=0.01)"
