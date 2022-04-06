@@ -153,7 +153,7 @@ Inside ```variants2genes_$DATE_OF_EXECUTION```, check ```output_files``` sub-fol
 
 ## Employing user-provided genome and/or GTF files:
 
-Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP 1 and STEP 5. We will run the example using "my_genome.fa" and "my_annotation.gtf" instead of mm10.fa and mm10.gtf as follows:
+Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP 1 and STEP 5. We will run the example using ```my_genome.fa``` and ```my_annotation.gtf``` instead of ```mm10.fa``` and ```mm10.gtf``` as follows:
 
 #### Obtaining BAM files to be used as inputs:
 ```
@@ -165,7 +165,8 @@ hisat2-build my_genome.fa my_genome_hisat2
 #### Running the pipeline:
 ```
 ## (5) Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g my_genome.fa -r my_annotation.gtf -t 20
+wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
+../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g my_genome.fa -r my_annotation.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
 
 ### Notes
