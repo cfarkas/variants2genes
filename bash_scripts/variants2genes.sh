@@ -530,6 +530,23 @@ bcftools convert -O v -o varlociraptor-germline_hom.FDR_1e-2.vcf varlociraptor-g
 varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HET --fdr 0.01 --var SNV > varlociraptor-germline_het.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-germline_het.FDR_1e-2.vcf varlociraptor-germline_het.FDR_1e-2.bcf
 
+
+printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+echo "==> Filtering somatic variants using final list of germline variants"
+printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+####
+#### Sanity Check: Comparing combined germline variants from HaplotypeCaller and bcftools with variants from varlociraptor
+####
+vcfintersect -i varlociraptor-germline_het.FDR_1e-2.vcf bcftools-gatk-germline.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F1.vcf
+vcfintersect -i varlociraptor-germline_hom.FDR_1e-2.vcf bcftools-gatk-germline.F1.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F2.vcf
+vcfintersect -i bcftools-gatk-germline.F2.vcf varlociraptor-case-somatic.FDR_1e-2.vcf -r ${g_DIR}/${reference_genome} --invert > varlociraptor-case-somatic.FDR_1e-2.F1.vcf
+mv bcftools-gatk-germline.F2.vcf bcftools-gatk-germline.vcf
+rm bcftools-gatk-germline.F1.vcf
+mv varlociraptor-case-somatic.FDR_1e-2.F1.vcf varlociraptor-case-somatic.FDR_1e-2.vcf
+
+bcftools convert -O v -o bcftools-gatk-germline.bcf bcftools-gatk-germline.vcf
+bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.bcf varlociraptor-case-somatic.FDR_1e-2.vcf
+
 echo ""
 echo "All done"
 echo ""
