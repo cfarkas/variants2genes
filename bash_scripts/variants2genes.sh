@@ -169,156 +169,148 @@ if [ ! -f ${b_DIR}/${case_bam_file}.bai ]; then
 fi
 
 begin_0=`date +%s`
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> MarkDuplicates in Control and Case BAM files using picard tools:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== MarkDuplicates in Control and Case BAM files using picard tools ${NC}\n"
+echo ""
 echo ""
 picard MarkDuplicates I=${a_DIR}/${control_bam_file} O=${control_bam_file_name}_marked_duplicates.bam M=${control_bam_file_name}_marked_dup_metrics.txt
 picard MarkDuplicates I=${b_DIR}/${case_bam_file} O=${case_bam_file_name}_marked_duplicates.bam M=${case_bam_file_name}_marked_dup_metrics.txt
 echo ""
-echo "Done. Duplicate identification was successful. Continue."
+echo "INFO ::: Done. Duplicate identification was successful. Continue."
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Sorting Control and Case BAM files using picard tools:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Sorting Control and Case BAM files using picard tools ${NC}\n"
+echo ""
 echo ""
 picard SortSam I=${control_bam_file_name}_marked_duplicates.bam O=${control_bam_file_name}_marked_duplicates.sorted.bam SORT_ORDER=coordinate CREATE_INDEX=true
 picard SortSam I=${case_bam_file_name}_marked_duplicates.bam O=${case_bam_file_name}_marked_duplicates.sorted.bam SORT_ORDER=coordinate CREATE_INDEX=true
 echo ""
-echo "Sorting was Done. Continue"
+echo "INFO ::: Sorting was Done. Continue"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Assigns all the reads in BAM files to a single new read-group using picard tools :"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Assigning all the reads in BAM files to a single new read-group using picard tools ${NC}\n"
+echo ""
 echo ""
 picard AddOrReplaceReadGroups I=${control_bam_file_name}_marked_duplicates.sorted.bam O=${control_bam_file_name}.for_gatk4.bam RGID=4 RGLB=lib1 RGPL=ILLUMINA RGPU=unit1 RGSM=20
 picard AddOrReplaceReadGroups I=${case_bam_file_name}_marked_duplicates.sorted.bam O=${case_bam_file_name}.for_gatk4.bam RGID=4 RGLB=lib1 RGPL=ILLUMINA RGPU=unit1 RGSM=20
 echo ""
-echo "Assignments were Done. Continue with gatk4 base recalibration"
+echo "INFO ::: Assignments were Done. Continue with gatk4 base recalibration"
 echo ""
-
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing gatk4 BaseRecalibrator on BAM files using user-provided known SNP sites in VCF format:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Performing gatk4 BaseRecalibrator on BAM files using user-provided known SNP sites in VCF format ${NC}\n"
+echo ""
 echo ""
 gatk CreateSequenceDictionary -R ${g_DIR}/${reference_genome}
 gatk IndexFeatureFile -F ${s_DIR}/${known_snps}
 gatk BaseRecalibrator --input ${control_bam_file_name}.for_gatk4.bam --reference ${g_DIR}/${reference_genome} --known-sites ${s_DIR}/${known_snps} --output ${control_bam_file_name}_recal_data.table
 gatk BaseRecalibrator --input ${case_bam_file_name}.for_gatk4.bam --reference ${g_DIR}/${reference_genome} --known-sites ${s_DIR}/${known_snps} --output ${case_bam_file_name}_recal_data.table
 echo ""
-echo "Recalibration was Done. We will apply base recalibration on bam files using recently created recalibration tables"
+echo "INFO ::: Recalibration was Done. We will apply base recalibration on bam files using recently created recalibration tables"
 echo ""
-
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Apply gatk4 BaseRecalibrator on BAM files using recalibration tables:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Apply gatk4 BaseRecalibrator on BAM files using recalibration tables ${NC}\n"
+echo ""
 echo ""
 gatk ApplyBQSR -R ${g_DIR}/${reference_genome} -I ${control_bam_file_name}.for_gatk4.bam --bqsr-recal-file ${control_bam_file_name}_recal_data.table -O ${control_bam_file_name}.recalibrated.bam
 gatk ApplyBQSR -R ${g_DIR}/${reference_genome} -I ${case_bam_file_name}.for_gatk4.bam --bqsr-recal-file ${case_bam_file_name}_recal_data.table -O ${case_bam_file_name}.recalibrated.bam
 echo ""
-echo "Recalibration on BAM files was Done. Continue with sorting and variant calling"
+echo "INFO ::: Recalibration on BAM files was Done. Continue with sorting and variant calling"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Sorting and index BAM files with SAMtools:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Sorting and index BAM files with SAMtools ${NC}\n"
+echo ""
 echo ""
 samtools sort -o ${control_bam_file_name}.recalibrated.sorted.bam ${control_bam_file_name}.recalibrated.bam -@ ${t} && samtools index ${control_bam_file_name}.recalibrated.sorted.bam -@ ${t}
 samtools sort -o ${case_bam_file_name}.recalibrated.sorted.bam ${case_bam_file_name}.recalibrated.bam -@ ${t} && samtools index ${case_bam_file_name}.recalibrated.sorted.bam -@ ${t}
 echo ""
-echo "Sorting was done, continue with variant calling"
+echo "INFO ::: Sorting was done, continue with variant calling"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing Variant Calling with gatk HaplotypeCaller:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Performing Variant Calling with gatk HaplotypeCaller ${NC}\n"
+echo ""
 echo ""
 gatk HaplotypeCaller --input ${control_bam_file_name}.recalibrated.sorted.bam --output ${control_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
 gatk HaplotypeCaller --input ${case_bam_file_name}.recalibrated.sorted.bam --output ${case_bam_file_name}.gatk4.germline.vcf --reference ${g_DIR}/${reference_genome}
-
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Hard-filter SNPs on multiple expressions using gatk VariantFiltration"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+echo "INFO ::: gatk HaplotypeCaller variant calling done, continue with variant filtering"
+echo ""
+echo ""
+printf "${YELLOW} ==== Hard-filter SNPs on multiple expressions using gatk VariantFiltration ${NC}\n"
+echo ""
 # https://gatk.broadinstitute.org/hc/en-us/articles/360035531112--How-to-Filter-variants-either-with-VQSR-or-by-hard-filtering
 gatk VariantFiltration -V ${control_bam_file_name}.gatk4.germline.vcf -filter "QD < 2.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${control_bam_file_name}.gatk4.germline.filtered.vcf
 gatk VariantFiltration -V ${case_bam_file_name}.gatk4.germline.vcf -filter "QD < 10.0" --filter-name "QD2" -filter "QUAL < 30.0" --filter-name "QUAL30" -filter "SOR > 3.0" --filter-name "SOR3" -filter "FS > 60.0" --filter-name "FS60" -filter "MQ < 40.0" --filter-name "MQ40" -filter "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" -filter "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8" -O ${case_bam_file_name}.gatk4.germline.filtered.vcf
 # https://gist.github.com/elowy01/93922762e131d7abd3c7e8e166a74a0b
 bcftools view -f PASS ${control_bam_file_name}.gatk4.germline.filtered.vcf > ${control_bam_file_name}.gatk4.germline.PASS.vcf
 bcftools view -f PASS ${case_bam_file_name}.gatk4.germline.filtered.vcf > ${case_bam_file_name}.gatk4.germline.PASS.vcf
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/):"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+echo "INFO ::: Filtering done, continue with bcftools variant calling"
+echo ""
+echo ""
+printf "${YELLOW} ==== Performing Variant Calling with bcftools (see: http://samtools.github.io/bcftools/) ${NC}\n"
+echo ""
 echo ""
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${control_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${control_bam_file_name}.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
 bcftools mpileup -B -C 50 -d 250 --fasta-ref ${g_DIR}/${reference_genome} --threads ${t} -Ou ${case_bam_file_name}.recalibrated.sorted.bam | bcftools call -mv -Ov -o ${case_bam_file_name}.vcf
 echo ""
-printf "${CYAN}:::::::::::::::::::::::\n"
-echo "bcftools variant Calling done"
-printf "${CYAN}:::::::::::::::::::::::${NC}\n"
+echo "INFO ::: bcftools variant Calling done. continue with freebayes variant calling"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing Variant Calling with freebayes (see: https://github.com/freebayes/freebayes):"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Performing Variant Calling with freebayes (see: https://github.com/freebayes/freebayes) ${NC}\n"
+echo ""
 echo ""
 freebayes -f ${g_DIR}/${reference_genome} -C 3 ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.freebayes.vcf
 echo "done with Control Bam file. Continue with Case bam file..."
 echo ""
 freebayes -f ${g_DIR}/${reference_genome} -C 3 ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.freebayes.vcf
 echo ""
-printf "${CYAN}::::::::::::::::::::::::\n"
-echo "Freebayes variant Calling done"
-printf "${CYAN}::::::::::::::::::::::::${NC}\n"
+echo "INFO ::: Freebayes variant Calling done. Continue with variant calling filtering"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Filtering and intersecting VCF files"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Filtering and intersecting VCF files ${NC}\n"
+echo ""
 echo ""
 ### Filtering and intersecting VCF files to discover germline variants
-echo "Filtering and intersecting VCF files to discover germline variants"
+printf "${YELLOW} ==== Filtering and intersecting VCF files to discover germline variants ${NC}\n"
+echo ""
 bcftools filter -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 1' ${control_bam_file_name}.vcf > Control_initial_filter.vcf
 bcftools filter -e'%QUAL<10 || (AC<2 && %QUAL<15) || (DP4[0]+DP4[1])/(DP4[2]+DP4[3]) > 0.3' ${case_bam_file_name}.vcf > ${case_bam_file_name}.bcftools.vcf
-echo "Done"
+echo "INFO ::: Done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Selecting variants in case VCF not present in control VCF:"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Selecting variants in case VCF not present in control VCF ${NC}\n"
+echo ""
 vcfintersect -i Control_initial_filter.vcf ${case_bam_file_name}.bcftools.vcf -r ${g_DIR}/${reference_genome} --invert > case_variants.vcf
 vcfintersect -i ${control_bam_file_name}.gatk4.germline.vcf ${case_bam_file_name}.gatk4.germline.PASS.vcf -r ${g_DIR}/${reference_genome} --invert > case_variants2.vcf
-echo "Done"
+echo "INFO ::: Done"
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Case VCF file: Filtering with vcflib ---> QUAL > 20"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Case VCF file: Filtering with vcflib ---> QUAL > 20 ${NC}\n"
+echo ""
 vcffilter -f "QUAL > 20" case_variants.vcf > case_variants.QUAL1.filter.vcf
 vcffilter -f "QUAL > 20" case_variants2.vcf > case_variants2.QUAL1.filter.vcf
-echo "First filter done"
+echo "INFO ::: First filter done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Case VCF file: Filtering with vcflib ---> DP > 4"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Case VCF file: Filtering with vcflib ---> DP > 4 ${NC}\n"
+echo ""
 vcffilter -f "DP > 4" case_variants.QUAL1.filter.vcf > case_variants.QUAL2.filter.vcf
 vcffilter -f "DP > 4" case_variants2.QUAL1.filter.vcf > case_variants2.QUAL2.filter.vcf
-echo "Second filter done"
+echo "INFO ::: Second filter done"
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Intersecting case variants in the ranges of control bam file:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Intersecting case variants in the ranges of control bam file ${NC}\n"
+echo ""
 bamToBed -i ${a_DIR}/${control_bam_file} > Control.bed
 mergeBed -i Control.bed > Control.merged.bed
 multiBamCov -bams ${a_DIR}/${control_bam_file} -bed Control.merged.bed > control_counts
 awk '{ if ($4 > 0) { print } }' control_counts > filter_merged.bed
 vcfintersect -b filter_merged.bed case_variants.QUAL2.filter.vcf > Case.filtered.vcf
 vcfintersect -b filter_merged.bed case_variants2.QUAL2.filter.vcf > Case.filtered2.vcf
-echo "Done"
-echo "Initially filtered Case-associated variants are named Case.filtered.vcf"
+echo "INFO ::: Done"
+echo "INFO ::: Initially filtered Case-associated variants are named Case.filtered.vcf"
 rm Control.bed filter_merged.bed Control.merged.bed control_counts
 rm case_variants*
 rm Control_initial_filter.vcf
@@ -327,24 +319,24 @@ echo ""
 
 # https://github.com/Illumina/strelka/releases
 ### Performing Somatic Variant Calling with strelka v2.9.10
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Performing Somatic Variant Calling with strelka v2.9.10:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-echo "for documentation, please see: https://github.com/Illumina/strelka"
+printf "${YELLOW} ==== Performing Somatic Variant Calling with strelka v2.9.10 ${NC}\n"
 echo ""
-echo "downloading strelka binary from github repository"
+echo ""
+echo "INFO ::: for documentation, please see: https://github.com/Illumina/strelka"
+echo ""
+echo "INFO ::: downloading strelka binary from github repository"
 wget https://github.com/Illumina/strelka/releases/download/v2.9.10/strelka-2.9.10.centos6_x86_64.tar.bz2
 tar xvjf strelka-2.9.10.centos6_x86_64.tar.bz2
 echo ""
-echo "==> run demo to check successful installation"
+printf "${CYAN} ====  run demo to check successful installation\n"
 bash strelka-2.9.10.centos6_x86_64/bin/runStrelkaSomaticWorkflowDemo.bash
 bash strelka-2.9.10.centos6_x86_64/bin/runStrelkaGermlineWorkflowDemo.bash
-echo "demo run was succesfull"
+printf "${CYAN} ==== INFO ::: demo run was succesfull ${NC}\n"
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Running on control and case samples: Collecting Germline variants:"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Running on control and case samples: Collecting Germline variants ${NC}\n"
+echo ""
 echo ""
 # configuration
 begin=`date +%s`
@@ -355,11 +347,9 @@ begin=`date +%s`
     --runDir strelka_germline
 # execution on a single local machine with n parallel jobs
 strelka_germline/runWorkflow.py -m local -j ${t}
-printf "${CYAN}:::::::::::::::::::::\n"
-echo "Variant Calling done"
-end=`date +%s`
-elapsed=`expr $end - $begin`
-printf "${CYAN}:::::::::::::::::::::${NC}\n"
+echo ""
+echo "INFO ::: Variant Calling done"
+echo ""
 cp ./strelka_germline/results/variants/variants.vcf.gz ./strelka_germline_variants.vcf.gz
 bgzip -d strelka_germline_variants.vcf.gz
 grep "#" strelka_germline_variants.vcf > strelka_germline_variants_header.vcf
@@ -368,11 +358,11 @@ grep -v "NoPassedVariantGTs" strelka_germline_variants_PASS.vcf > strelka_germli
 cat strelka_germline_variants_header.vcf strelka_germline_variants_PASS2.vcf > strelka_germline_variants.filtered.vcf
 rm strelka_germline_variants_header.vcf strelka_germline_variants_PASS.vcf strelka_germline_variants_PASS2.vcf
 echo ""
-echo "Fitered variants are called strelka_germline_variants.filtered.vcf"
+echo "INFO ::: Fitered variants are called strelka_germline_variants.filtered.vcf"
 echo ""
-printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Continue with Somatic Variant Calling"
-printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Continue with Somatic Variant Calling ${NC}\n"
+echo ""
 # configuration
 begin=`date +%s`
 ./strelka-2.9.10.centos6_x86_64/bin/configureStrelkaSomaticWorkflow.py \
@@ -383,15 +373,12 @@ begin=`date +%s`
 # execution on a single local machine with n parallel jobs
 strelka_somatic/runWorkflow.py -m local -j ${t}
 echo ""
-printf "${CYAN}:::::::::::::::::::::\n"
-echo "Variant Calling done"
-end=`date +%s`
-elapsed=`expr $end - $begin`
-printf "${CYAN}:::::::::::::::::::::${NC}\n"
 echo ""
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Filtering Germline and Somatic variants"
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo "INFO ::: Variant Calling done"
+echo ""
+echo ""
+printf "${YELLOW} ==== Filtering Germline and Somatic variants ${NC}\n"
+echo ""
 cp ./strelka_somatic/results/variants/somatic.snvs.vcf.gz ./strelka_somatic_variants.vcf.gz
 bgzip -d strelka_somatic_variants.vcf.gz
 grep "#" strelka_somatic_variants.vcf > strelka_somatic_variants_header.vcf
@@ -405,12 +392,12 @@ grep "PASS" strelka_somatic_indels.vcf > strelka_somatic_indels_PASS.vcf
 cat strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf > strelka_somatic_indels.filtered.vcf
 rm strelka_somatic_indels_header.vcf strelka_somatic_indels_PASS.vcf
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 # Filtering Case.filtered.vcf variants file with strelka outputs
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Filtering Case.filtered.vcf variants file with strelka outputs..."
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Filtering Case.filtered.vcf variants file with strelka outputs ${NC}\n"
+echo ""
 cat strelka_somatic_indels.filtered.vcf strelka_somatic_variants.filtered.vcf > strelka_all_somatic.vcf
 grep "#" strelka_all_somatic.vcf > strelka_somatic_header.vcf
 grep -v "#" strelka_all_somatic.vcf > strelka_somatic_SNVs.vcf
@@ -424,9 +411,9 @@ vcfintersect -i strelka_somatic.vcf Case.filtered.st.vcf -r ${g_DIR}/${reference
 vcfintersect -i strelka_somatic.vcf Case.filtered2.st.vcf -r ${g_DIR}/${reference_genome} > Case.filtered2.strelka.vcf
 
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Combining bcftools and gatk HaplotypeCaller germline variants into a single file..."
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Combining bcftools and gatk HaplotypeCaller germline variants into a single file ${NC}\n"
+echo ""
 echo ""
 parallel bgzip ::: Case.filtered.strelka.vcf Case.filtered2.strelka.vcf                                                             # bgzip VCF files
 parallel tabix -p vcf ::: Case.filtered.strelka.vcf.gz Case.filtered2.strelka.vcf.gz                                                # tabix VCF files
@@ -436,110 +423,120 @@ rm Case.filtered.st.vcf Case.filtered2.st.vcf strelka_somatic.vcf Case.filtered.
 
 vcfintersect -i bcftools-gatk-germline.vcf strelka_somatic_variants.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_somatic-final.vcf
 vcfintersect -i bcftools-gatk-germline.vcf strelka_somatic_indels.filtered.vcf -r ${g_DIR}/${reference_genome} --invert > strelka_indels-final.vcf
-echo "Done"
-### Annotating variants and obtaining gene list
+echo "INFO ::: Done"
 echo ""
-printf "${YELLOW}::::::::::::::::::::::::::::::\n"
-echo "==> Annotating Germline variants"
-printf "${YELLOW}::::::::::::::::::::::::::::::${NC}\n"
-bedtools intersect -a ${r_DIR}/${reference_gtf} -b bcftools-gatk-germline.vcf > bcftools-gatk-germline.gtf
-perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' bcftools-gatk-germline.gtf > genes.with.variants.tabular
-awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
-rm genes.with.variants.tabular
-sed -i 's/gene_id //g' gene_id_identifiers.tab
-sed -i 's/";//g' gene_id_identifiers.tab
-sed -i 's/"//g' gene_id_identifiers.tab
-mv gene_id_identifiers.tab genes_with_variants.tabular
+printf "${YELLOW} ==== Joining bcftools, gatk HaplotypeCaller, freebayes and strelka2 variants to discover somatic variants with varlociraptor ${NC}\n"
 echo ""
-
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Joining bcftools, gatk HaplotypeCaller, freebayes and strelka2 variants to discover somatic variants with varlociraptor"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-echo "==> BGZIP, tabix and merge control and case freebayes variants:"
+echo "==== BGZIP, tabix and merge control and case freebayes variants:"
 parallel bgzip ::: ${control_bam_file_name}.freebayes.vcf ${case_bam_file_name}.freebayes.vcf                                                                 # bgzip VCF files
 parallel tabix -p vcf ::: ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz                                                    # tabix VCF files
 bcftools merge -o freebayes_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.freebayes.vcf.gz ${case_bam_file_name}.freebayes.vcf.gz --force-samples    # join VCF files
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 
-echo "==> BGZIP, tabix and merge control and case gatk HaplotypeCaller variants:"
+echo "==== BGZIP, tabix and merge control and case gatk HaplotypeCaller variants:"
 parallel bgzip ::: ${control_bam_file_name}.gatk4.germline.PASS.vcf ${case_bam_file_name}.gatk4.germline.PASS.vcf                                             # bgzip VCF files
 parallel tabix -p vcf ::: ${control_bam_file_name}.gatk4.germline.PASS.vcf.gz ${case_bam_file_name}.gatk4.germline.PASS.vcf.gz                                # tabix VCF files
 bcftools merge -o gatk_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.gatk4.germline.PASS.vcf.gz ${case_bam_file_name}.gatk4.germline.PASS.vcf.gz --force-samples    # join VCF files
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 
-echo "==> BGZIP, tabix and merge control and case freebayes variants:"
+echo "==== BGZIP, tabix and merge control and case freebayes variants:"
 parallel bgzip ::: ${control_bam_file_name}.vcf ${case_bam_file_name}.vcf                                                                    # bgzip VCF files
 parallel tabix -p vcf ::: ${control_bam_file_name}.vcf.gz ${case_bam_file_name}.vcf.gz                                                       # tabix VCF files
 bcftools merge -o bcftools_for_varlociraptor.vcf.gz -O z ${control_bam_file_name}.vcf.gz ${case_bam_file_name}.vcf.gz --force-samples        # join VCF files
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 
-echo "==> BGZIP, tabix and merge control and case strelka2 variants:"
+echo "==== BGZIP, tabix and merge control and case strelka2 variants:"
 parallel bgzip ::: strelka_germline_variants.filtered.vcf strelka_somatic-final.vcf strelka_indels-final.vcf                                                                   # bgzip VCF files
 parallel tabix -p vcf ::: strelka_germline_variants.filtered.vcf.gz strelka_somatic-final.vcf.gz strelka_indels-final.vcf.gz                                                   # tabix VCF files
 bcftools merge -o strelka2_for_varlociraptor.vcf.gz -O z strelka_germline_variants.filtered.vcf.gz strelka_somatic-final.vcf.gz strelka_indels-final.vcf.gz --force-samples    # join VCF files
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 
-echo "==> merge variants from the four variant callers"
-tabix -p vcf bcftools_for_varlociraptor.vcf.gz
-tabix -p vcf gatk_for_varlociraptor.vcf.gz 
-tabix -p vcf freebayes_for_varlociraptor.vcf.gz 
-tabix -p vcf strelka2_for_varlociraptor.vcf.gz  
+echo "==== Removing AD tag from merged variants with bcftools"
+gunzip bcftools_for_varlociraptor.vcf.gz
+gunzip gatk_for_varlociraptor.vcf.gz 
+gunzip freebayes_for_varlociraptor.vcf.gz 
+gunzip strelka2_for_varlociraptor.vcf.gz  
+
+bcftools annotate -x FORMAT/AD bcftools_for_varlociraptor.vcf --force > bcftools_for_varlociraptor.filter1.vcf
+bcftools annotate -x FORMAT/AD freebayes_for_varlociraptor.vcf --force > freebayes_for_varlociraptor.filter1.vcf
+bcftools annotate -x FORMAT/AD gatk_for_varlociraptor.vcf --force > gatk_for_varlociraptor.filter1.vcf
+bcftools annotate -x FORMAT/AD strelka2_for_varlociraptor.vcf --force > strelka2_for_varlociraptor.filter1.vcf
+
+mv bcftools_for_varlociraptor.filter1.vcf bcftools_for_varlociraptor.vcf
+mv freebayes_for_varlociraptor.filter1.vcf freebayes_for_varlociraptor.vcf
+mv gatk_for_varlociraptor.filter1.vcf gatk_for_varlociraptor.vcf
+mv strelka2_for_varlociraptor.filter1.vcf strelka2_for_varlociraptor.vcf
+
+printf "${YELLOW} ==== merge variants from the four variant callers ${NC}\n"
+parallel bgzip ::: bcftools_for_varlociraptor.vcf freebayes_for_varlociraptor.vcf gatk_for_varlociraptor.vcf strelka2_for_varlociraptor.vcf
+parallel tabix -p vcf ::: bcftools_for_varlociraptor.vcf.gz freebayes_for_varlociraptor.vcf.gz gatk_for_varlociraptor.vcf.gz strelka2_for_varlociraptor.vcf.gz   
 bcftools merge -o variants_for_varlociraptor.vcf.gz -O z bcftools_for_varlociraptor.vcf.gz gatk_for_varlociraptor.vcf.gz freebayes_for_varlociraptor.vcf.gz strelka2_for_varlociraptor.vcf.gz --force-samples # join VCF files
 echo ""
+echo "INFO ::: Done. Continue with varlociraptor filtering"
+echo ""
 
-printf "${YELLOW}::::::::::::::::::::::::::::::::\n"
-echo "==> Executing varlociraptor filtering"
-printf "${YELLOW}::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Executing varlociraptor filtering ${NC}\n"
+echo ""
 echo ""
 printf "${CYAN} #1: Estimating alignment properties ${NC}\n"
 varlociraptor estimate alignment-properties ${g_DIR}/${reference_genome} --bam ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.varlociraptor.alignment-properties.json
 varlociraptor estimate alignment-properties ${g_DIR}/${reference_genome} --bam ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.varlociraptor.alignment-properties.json
 echo ""
-echo "Done"
+echo "INFO ::: Done"
 echo ""
 printf "${CYAN} #2: preprocessing variants ${NC}\n"
 varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${control_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${control_bam_file_name}.recalibrated.sorted.bam > ${control_bam_file_name}.varlociraptor.bcf
 varlociraptor preprocess variants ${g_DIR}/${reference_genome} --alignment-properties ${case_bam_file_name}.varlociraptor.alignment-properties.json --candidates variants_for_varlociraptor.vcf.gz --bam ${case_bam_file_name}.recalibrated.sorted.bam > ${case_bam_file_name}.varlociraptor.bcf
 echo ""
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Call and filter variants with varlociraptor"
-printf "${YELLOW}:::::::::::::::::::::::::::::::::::::::::${NC}\n"
 echo ""
-# call variants
+printf "${YELLOW} ==== Calling and filtering variants with varlociraptor ${NC}\n"
+echo ""
+echo ""
+printf "${CYAN} #1: call variants ${NC}\n"
 varlociraptor call variants tumor-normal --tumor ${case_bam_file_name}.varlociraptor.bcf --normal ${control_bam_file_name}.varlociraptor.bcf > varlociraptor-variants.bcf
 bcftools convert -O v -o varlociraptor-variants.vcf varlociraptor-variants.bcf
+echo ""
 
-# filter variants: somatic
+printf "${CYAN} #2:filter variants: somatic ${NC}\n"
 varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events SOMATIC_TUMOR --fdr 0.01 --var SNV > varlociraptor-case-somatic.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.vcf varlociraptor-case-somatic.FDR_1e-2.bcf
+echo ""
 
-# filter variants: germline homozygous
+printf "${CYAN} #3:filter variants: germline homozygous ${NC}\n"
 varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HOM --fdr 0.01 --var SNV > varlociraptor-germline_hom.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-germline_hom.FDR_1e-2.vcf varlociraptor-germline_hom.FDR_1e-2.bcf
+echo ""
 
-# filter variants: germline heterozygous
+printf "${CYAN} #4: filter variants: germline heterozygous ${NC}\n"
 varlociraptor filter-calls control-fdr varlociraptor-variants.bcf --events GERMLINE_HET --fdr 0.01 --var SNV > varlociraptor-germline_het.FDR_1e-2.bcf
 bcftools convert -O v -o varlociraptor-germline_het.FDR_1e-2.vcf varlociraptor-germline_het.FDR_1e-2.bcf
 
+echo ""
+echo "INFO ::: Filtering Done"
+echo ""
 
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-echo "==> Filtering somatic variants using final list of germline variants"
-printf "${YELLOW}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+printf "${YELLOW} ==== Filtering somatic variants using final list of germline variants ${NC}\n"
+echo ""
+
 ####
 #### Sanity Check: Comparing combined germline variants from HaplotypeCaller and bcftools with variants from varlociraptor
 ####
+
 vcfintersect -i varlociraptor-germline_het.FDR_1e-2.vcf bcftools-gatk-germline.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F1.vcf
 vcfintersect -i varlociraptor-germline_hom.FDR_1e-2.vcf bcftools-gatk-germline.F1.vcf -r ${g_DIR}/${reference_genome} --invert > bcftools-gatk-germline.F2.vcf
 vcfintersect -i bcftools-gatk-germline.F2.vcf varlociraptor-case-somatic.FDR_1e-2.vcf -r ${g_DIR}/${reference_genome} --invert > varlociraptor-case-somatic.FDR_1e-2.F1.vcf
+
 mv bcftools-gatk-germline.F2.vcf case-germline.vcf
 rm bcftools-gatk-germline.F1.vcf
 mv varlociraptor-case-somatic.FDR_1e-2.F1.vcf varlociraptor-case-somatic.FDR_1e-2.vcf
@@ -547,9 +544,13 @@ mv varlociraptor-case-somatic.FDR_1e-2.F1.vcf varlociraptor-case-somatic.FDR_1e-
 bcftools convert -O v -o case-germline.bcf case-germline.vcf
 bcftools convert -O v -o varlociraptor-case-somatic.FDR_1e-2.bcf varlociraptor-case-somatic.FDR_1e-2.vcf
 
-printf "${YELLOW}::::::::::::::::::::::::::::::\n"
-echo "==> Annotating Germline variants"
-printf "${YELLOW}::::::::::::::::::::::::::::::${NC}\n"
+echo ""
+echo "INFO ::: Filtering Done"
+echo ""
+
+echo ""
+printf "${YELLOW} ==== Annotating Germline variants ${NC}\n"
+echo ""
 bedtools intersect -a ${r_DIR}/${reference_gtf} -b case-germline.vcf > case-germline.gtf
 perl -lne 'print "@m" if @m=(/((?:gene_id)\s+\S+)/g);' case-germline.gtf > genes.with.variants.tabular
 awk '!a[$0]++' genes.with.variants.tabular > gene_id_identifiers.tab
@@ -560,16 +561,15 @@ sed -i 's/"//g' gene_id_identifiers.tab
 mv gene_id_identifiers.tab genes_with_variants.tabular
 echo ""
 
+### Output files
 echo ""
-echo "All done"
+echo ":::: All done ::::"
 echo ""
 
-### Output files
-echo ":::: All done ::::"
 rm Case.filtered.vcf
 mkdir output_files
 mv case-germline.gtf genes_with_variants.tabular case-germline.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
 echo "(1) case-germline.gtf"
@@ -589,7 +589,7 @@ echo "(4): varlociraptor complete list of variants"
 echo "(5): Filtered varlociraptor somatic variants (FDR<=0.01)"
 echo "(6): Filtered varlociraptor common homozygous germline variants (FDR<=0.01)"
 echo "(7): Filtered varlociraptor common heterozygous germline variants (FDR<=0.01)"
-printf "${CYAN}::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
+printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 end_0=`date +%s`
 elapsed_0=`expr $end_0 - $begin_0`
