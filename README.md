@@ -44,10 +44,6 @@ conda install -c bioconda -y ncbi-ngs-sdk
 conda install -c bioconda -y hisat2
 conda install -c bioconda -y minimap2
 conda install -c bioconda -y fastp
-conda install -c bioconda -y r-ggplot2
-conda install -c bioconda -y r-reshape2
-conda install -c bioconda -y r-dplyr
-conda install -c bioconda -y r-gridextra
 conda install -c conda-forge -y coreutils
 conda install -c anaconda -y gawk
 conda install -c conda-forge -y sed
@@ -66,6 +62,10 @@ Also install (not through conda):
 - ```SAMtools``` and ```bcftools```. To install it, see here: https://github.com/cfarkas/variants2genes/wiki#obtaining-and-installing-up-to-date-samtools-bcftools-and-htslib-latest-version115-march-24-2022
 - ```Varlociraptor``` (NOT through conda, please use ```cargo```). To install it, see here: https://varlociraptor.github.io/docs/installation/ and here: https://github.com/cfarkas/variants2genes/wiki#obtaining-rust-cargo-rust-package-and-install-velociraptor
 - ```Python2```. Some Ubuntu distros comes Python2 by default. In ubuntu 20.04 can be installed as follows: ```sudo apt install python2```
+
+Optionally Install:
+- R packages ```ggplot2```, ```reshape2```, ```dplyr``` and ```gridextra```. See here:
+
 
 After these steps, a conda enviroment called variants2genes can be managed as follows:
 ```
