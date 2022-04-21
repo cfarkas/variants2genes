@@ -49,6 +49,9 @@ conda install -c anaconda -y gawk
 conda install -c conda-forge -y sed
 conda install -c bioconda -y gatk4=4.0.5.1
 conda install -c bioconda -y freebayes
+pip install notebook    # installing jupyter notebook
+pip install pandas
+pip install cyvcf2      # Installing cyvcf2
 
 bash makefile                                                  # make  & install
 ```
