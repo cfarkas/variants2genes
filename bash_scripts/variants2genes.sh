@@ -549,6 +549,30 @@ echo "INFO ::: Filtering Done"
 echo ""
 
 echo ""
+printf "${YELLOW} ==== Formatting case-associated germline variants with varlociraptor specs ${NC}\n"
+echo ""
+#### Intersect germline variants against varlociraptor variants
+# https://davetang.org/muse/2019/09/02/comparing-vcf-files/
+
+parallel bgzip ::: case-germline.vcf varlociraptor-variants.vcf                                                            
+parallel tabix -p vcf ::: case-germline.vcf.gz varlociraptor-variants.vcf.gz                                            
+bcftools isec varlociraptor-variants.vcf.gz case-germline.vcf.gz -p case-germline-overlap -n =2 -w 1
+cp ./case-germline-overlap/*.vcf ./case-germline-varlociraptor.vcf
+rm -r -f case-germline-overlap
+gunzip case-germline.vcf.gz
+gunzip varlociraptor-variants.vcf.gz
+echo "number of variants from bcftools output:"
+grep "chr" case-germline.vcf -c
+echo ""
+echo "number of variants from varlociraptor intersection:"
+grep "chr" case-germline-varlociraptor.vcf -c
+echo ""
+
+echo ""
+echo "INFO ::: Fomatting was Done"
+echo ""
+
+echo ""
 printf "${YELLOW} ==== Annotating Germline variants ${NC}\n"
 echo ""
 bedtools intersect -a ${r_DIR}/${reference_gtf} -b case-germline.vcf > case-germline.gtf
@@ -568,27 +592,29 @@ echo ""
 
 rm Case.filtered.vcf
 mkdir output_files
-mv case-germline.gtf genes_with_variants.tabular case-germline.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
+mv case-germline.gtf genes_with_variants.tabular case-germline.vcf case-germline-varlociraptor.vcf varlociraptor-variants.vcf varlociraptor-variants.bcf varlociraptor-case-somatic.FDR_1e-2* varlociraptor-germline_h* ./output_files
 printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
 echo "The following files are located in the the ./variants2genes_$sec/output_files/ folder"
 echo ""
 echo "(1) case-germline.gtf"
 echo "(2) case-germline.vcf"
-echo "(3) genes_with_variants.tabular"
-echo "(4) varlociraptor-variants.vcf"
-echo "(5) varlociraptor-case-somatic.FDR_1e-2.vcf"
-echo "(6) varlociraptor-germline_hom.FDR_1e-2.vcf"
-echo "(7) varlociraptor-germline_het.FDR_1e-2.vcf"
+echo "(3) case-germline-varlociraptor.vcf"
+echo "(4) genes_with_variants.tabular"
+echo "(5) varlociraptor-variants.vcf"
+echo "(6) varlociraptor-case-somatic.FDR_1e-2.vcf"
+echo "(7) varlociraptor-germline_hom.FDR_1e-2.vcf"
+echo "(8) varlociraptor-germline_het.FDR_1e-2.vcf"
 echo ""
 echo "Corresponding to:"
 echo ""
 echo "(1): Case-associated germline variants in GTF format (bcftools + gatk HaplotypeCaller calls)"
 echo "(2): Case-associated germline variants in VCF format (bcftools + gatk HaplotypeCaller calls)"
-echo "(3): List of genes with germline variants in tabular format"
-echo "(4): varlociraptor complete list of variants"
-echo "(5): Filtered varlociraptor somatic variants (FDR<=0.01)"
-echo "(6): Filtered varlociraptor common homozygous germline variants (FDR<=0.01)"
-echo "(7): Filtered varlociraptor common heterozygous germline variants (FDR<=0.01)"
+echo "(3): Case-associated germline variants following varlociraptor specifications"
+echo "(4): List of genes with germline variants in tabular format"
+echo "(5): varlociraptor complete list of variants"
+echo "(6): Filtered varlociraptor somatic variants (FDR<=0.01)"
+echo "(7): Filtered varlociraptor common homozygous germline variants (FDR<=0.01)"
+echo "(8): Filtered varlociraptor common heterozygous germline variants (FDR<=0.01)"
 printf "${CYAN}:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::${NC}\n"
 
 end_0=`date +%s`
