@@ -117,8 +117,8 @@ genome-download mm10
 variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s dbSNP.raw.vcf -t 20
 ```
 - After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` where ```$DATE_OF_EXECUTION = Day:Month:Year_Hour:Minute:Sec```, will contain the results. 
-- To obtain known snps for mouse, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
-and here: https://ftp.ebi.ac.uk/pub/databases/mousegenomes/REL-2112-v8-SNPs_Indels/
+- To obtain mm10 known snps for mouse, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
+- To obtain mm39 known snps for mouse, please visit here:: https://ftp.ebi.ac.uk/pub/databases/mousegenomes/REL-2112-v8-SNPs_Indels/
 
 See an example in our wiki page here: https://github.com/cfarkas/variants2genes/wiki#example-collect-ko-linked-variants-from-rna-seq-data
 
