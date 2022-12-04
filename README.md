@@ -48,10 +48,10 @@ conda install -c conda-forge -y coreutils
 conda install -c anaconda -y gawk
 conda install -c conda-forge -y sed
 conda install -c bioconda -y gatk4=4.0.5.1
-conda install -c bioconda -y freebayes
-pip install notebook                                           
-pip install pandas
-pip install cyvcf2                                       
+conda install -c bioconda -y freebayes                                         
+conda install -c anaconda -y pandas
+pip install cyvcf2
+pip install notebook
 
 bash makefile                                                  # make  & install
 ```
