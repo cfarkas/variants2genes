@@ -25,7 +25,7 @@ Pipeline Outline:
 
 # Installation:
 
-### Option 1: Installing dependences via anaconda (recommended)
+### Option 1: Installing dependences via anaconda (recommended). Tested in Ubuntu 16.04, 20.04 and 22.04
 - requires miniconda, python2.7 and/or python>=3. To install miniconda, see: https://docs.conda.io/en/latest/miniconda.html
 ```
 git clone https://github.com/cfarkas/variants2genes.git        # clone repository
