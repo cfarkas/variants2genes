@@ -114,64 +114,13 @@ conda activate variants2genes
 genome-download mm10   
 
 # Execute the pipeline using 20 threads for processing
-variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
+variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s dbSNP.raw.vcf -t 20
 ```
 - After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` where ```$DATE_OF_EXECUTION = Day:Month:Year_Hour:Minute:Sec```, will contain the results. 
 - To obtain known snps for mouse, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
 and here: https://ftp.ebi.ac.uk/pub/databases/mousegenomes/REL-2112-v8-SNPs_Indels/
 
-## Example: Collect KO-linked variants from RNA-seq data:
-- As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
-- As outputs, the pipeline will take BAM file names until the ```.bam``` prefix is encountered
-- From scratch, inside ```variants2genes``` folder:
-
-#### Obtaining BAM files to be used as inputs:
-```
-# Inside variants2genes folder
-mkdir SALL2_WT_vs_KO && cd SALL2_WT_vs_KO
-
-## (1) Download reference genome from UCSC and correspondent GTF file. Then, build HISAT2 index. 
-../bin/genome-download mm10
-hisat2-build mm10.fa mm10_hisat2
-
-## (2) Download and align SALL2 Wild type and Knockout reads with HISAT2, using 25 threads.
-prefetch -O ./ SRR8267474 && fastq-dump --gzip SRR8267474            # WT sample
-hisat2 -x mm10_hisat2 -p 25 -U SRR8267474.fastq.gz | samtools view -bSh > WT.bam
-prefetch -O ./ SRR8267458 && fastq-dump --gzip SRR8267458            # KO sample
-hisat2 -x mm10_hisat2 -p 25 -U SRR8267458.fastq.gz | samtools view -bSh > KO.bam
-
-## (3) sort and index bam samples using 25 threads
-samtools sort -o WT.sorted.bam WT.bam -@ 25 && samtools index WT.sorted.bam -@ 25
-samtools sort -o KO.sorted.bam KO.bam -@ 25 && samtools index KO.sorted.bam -@ 25
-
-## (4) (optional): Use plot-variants to inspect genome-wide variants in every sample (check graph.pdf)
-../bin/plot-variants -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -p ../R_scripts/bam_coverage_mouse.R
-```
-#### Running the pipeline:
-```
-## (5) Run variants2genes.sh pipeline to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
-../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g mm10.fa -r mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
-```
-Inside ```variants2genes_$DATE_OF_EXECUTION```, check ```output_files``` sub-folder containing output files. From this example, two chr12 and 502 chr14 KO-linked germline variants were discovered.  
-
-## Employing user-provided genome and/or GTF files:
-
-Important: If users have their own genome and/or annotation file, their can use it in the pipeline, if desired. Their must edit STEP 1 and STEP 5. We will run the example using ```my_genome.fa``` and ```my_annotation.gtf``` instead of ```mm10.fa``` and ```mm10.gtf``` as follows:
-
-#### Obtaining BAM files to be used as inputs:
-```
-## (1): Build HISAT2 index of my_genome.fa. 
-hisat2-build my_genome.fa my_genome_hisat2
-
-... Same Steps (2), (3) and (4) ...
-```
-#### Running the pipeline:
-```
-## (5) Run variants2genes.sh script to collect KO-linked variants and correspondent genes with variants (using 20 threads)
-wget -O mm10_dbSNP.raw.vcf https://usegalaxy.org/datasets/bbd44e69cb8906b509fb7398dabbcd16/display?to_ext=vcf   # download mm10 known-snps sites
-../bin/variants2genes -a WT.sorted.bam -b KO.sorted.bam -g my_genome.fa -r my_annotation.gtf -s mm10_dbSNP.raw.vcf -t 20
-```
+See an example in our wiki page here:
 
 ### Notes
 Compiling automatically uses Shell script compiler shc to make binaries, please check: https://github.com/neurobin/shc. 
