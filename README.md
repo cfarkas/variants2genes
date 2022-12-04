@@ -117,7 +117,8 @@ genome-download mm10
 variants2genes -a /path/to/WT.sorted.bam -b /path/to/KO.sorted.bam -g /path/to/mm10.fa -r /path/to/mm10.gtf -s mm10_dbSNP.raw.vcf -t 20
 ```
 - After these steps, a folder named ```variants2genes_$DATE_OF_EXECUTION``` where ```$DATE_OF_EXECUTION = Day:Month:Year_Hour:Minute:Sec```, will contain the results. 
-- To obtain known snps for each species, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
+- To obtain known snps for mouse, please visit here: https://usegalaxy.org/u/carlosfarkas/h/dbsnpvcffiles
+and here: https://ftp.ebi.ac.uk/pub/databases/mousegenomes/REL-2112-v8-SNPs_Indels/
 
 ## Example: Collect KO-linked variants from RNA-seq data:
 - As an example, we will analyze haplotypes from an RNA-seq data taken from SALL2 wild type and knockout mice, presenting germline variants linked to Chromosome 14, see: https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-019-5504-9. With the pipeline, we will obtain these linked variants to knockout mice, not present in the wild-type counterpart. The correspondent illumina reads will be downloaded and aligned against mm10 genome (mus musculus version 10). 
