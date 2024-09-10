@@ -51,8 +51,8 @@ conda install -c bioconda -y gatk4=4.0.5.1
 conda install -c bioconda -y freebayes                                         
 conda install -c anaconda -y pandas
 conda install -c bioconda -y varlociraptor 
-pip install cyvcf2
-pip install notebook
+conda install -y bioconda::cyvcf2
+conda install -y anaconda::notebook
 
 bash makefile                                                  # make  & install
 ```
